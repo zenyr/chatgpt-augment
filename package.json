@@ -1,0 +1,34 @@
+{
+  "name": "chatgpt-augment",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.195",
+    "@types/node-emoji": "^1.8.2",
+    "@types/react": "^18.2.8",
+    "@types/react-dom": "^18.2.4",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@mantine/core": "^6.0.13",
+    "@mantine/hooks": "^6.0.13",
+    "@mantine/notifications": "^6.0.13",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@tabler/icons-react": "^2.21.0",
+    "chrono-node": "^2.6.3",
+    "gpt-tokenizer": "^2.1.1",
+    "lodash": "^4.17.21",
+    "node-emoji": "^2.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
