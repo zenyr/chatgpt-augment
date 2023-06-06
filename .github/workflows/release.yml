@@ -2,8 +2,8 @@ name: Release Extension
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -24,28 +24,13 @@ jobs:
       - name: Build extension
         run: yarn build
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Auto release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
       - name: Compress dist folder
         run: zip -r extension.zip dist
 
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./extension.zip
-          asset_name: extension.zip
-          asset_content_type: application/zip
+          repo_token: "${{ secrets.GH_TOKEN }}"
+          prerelease: false
+          title: "Release ${{ github.ref }}"
+          files: |
+            *.zip
