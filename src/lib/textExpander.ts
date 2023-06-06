@@ -1,4 +1,5 @@
 import { parse } from "chrono-node";
+import { memoize } from "lodash";
 import { compose } from "lodash/fp";
 import * as emoji from "node-emoji";
 
@@ -50,9 +51,21 @@ const tryURLDecode = (input: string | Error) => {
   }
 };
 
-export const textExpander: (t: string) => string | Error = compose(
-  tryChrono,
-  tryEmoji,
-  tryStringify,
-  tryURLDecode
+const tryMacros = memoize(
+  (macros: Record<string, string>) => (input: string | Error) => {
+    if (input instanceof Error) return input;
+    let target = input.trim();
+    const found = Object.entries(macros).find(([k]) => {
+      if (k === target) {
+        return true;
+      }
+    });
+    if (!found) return input;
+    const [k, v] = found;
+    return input.replace(k, v);
+  }
 );
+export const getTextExpander: (
+  macros: Record<string, string>
+) => (t: string) => string | Error = (macros) =>
+  compose(tryChrono, tryEmoji, tryStringify, tryURLDecode, tryMacros(macros));

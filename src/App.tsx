@@ -1,41 +1,80 @@
 import { MutationWatcher } from "@/comp/MutationWatcher";
-import { Group, MantineProvider, Text } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
+import { Group, MantineProvider, Text, Transition } from "@mantine/core";
+import { useToggle, useViewportSize } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import json from "../package.json";
 import { InputWatcher } from "./comp/InputWatcher";
 import { SelectionWatcher } from "./comp/SelectionWatcher";
+import { createEmotionCache } from "@mantine/core";
+import { JSONFormatter } from "./comp/JSONFormatter";
+import { useEffect, useState } from "react";
+import { ClickThrougher } from "./comp/ClickThrougher";
 
+const cache = createEmotionCache({
+  key: "cgpt-agmt",
+  insertionPoint: document.body,
+});
 type Props = { html: string };
 export const MiniApp = ({ html }: Props) => {
   const [visible, toggle] = useToggle([true, false]);
+  const [mounted, setMounted] = useState(false);
+  const isWide = useViewportSize().width > 500;
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 5);
+  }, []);
   return (
-    <MantineProvider>
-      <Group spacing="xs" align="center" position="center">
-        <span
-          className="app"
-          style={{ display: visible ? "block" : "none" }}
-          id="chatgpt-augment-app"
-        >
-          <Text
-            variant="gradient"
-            style={{ lineHeight: "initial" }}
-            onClick={() => toggle()}
+    <MantineProvider emotionCache={cache} theme={{ colorScheme: "dark" }}>
+      <Transition
+        mounted={mounted}
+        transition="pop"
+        duration={2000}
+        timingFunction="ease"
+      >
+        {(styles) => (
+          <Group
+            style={styles}
+            spacing="xs"
+            align="center"
+            position="center"
+            className="cgpt-agmt"
+            noWrap
           >
-            ChatGPT Augment Online. v{json.version}
-          </Text>
-        </span>
-        <span
-          className="org"
-          dangerouslySetInnerHTML={{ __html: html }}
-          style={{ display: !visible ? "inline-block" : "none" }}
-          onClick={() => toggle()}
-        />
-        <SelectionWatcher />
-        <MutationWatcher />
-        <InputWatcher />
-        <Notifications />
-      </Group>
+            <Text
+              variant="gradient"
+              style={{
+                lineHeight: "initial",
+                display: visible ? "block" : "none",
+              }}
+              onClick={() => toggle()}
+              id="chatgpt-augment-app"
+            >
+              {isWide && `ChatGPT Augment `}v{json.version}
+            </Text>
+            <Text
+              style={{
+                lineHeight: "initial",
+                display: !visible ? "block" : "none",
+              }}
+              onClick={() => toggle()}
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+            <Group
+              style={{ display: visible ? "flex" : "none" }}
+              noWrap
+              spacing="xs"
+              align="center"
+              position="center"
+            >
+              <ClickThrougher />
+              <MutationWatcher />
+              <InputWatcher />
+              <SelectionWatcher />
+              <JSONFormatter />
+              <Notifications position="top-right" />
+            </Group>
+          </Group>
+        )}
+      </Transition>
     </MantineProvider>
   );
 };

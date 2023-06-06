@@ -1,11 +1,12 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "watch": "chokidar \"**/*.ts?\" -c \"vite build\"",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -14,6 +15,7 @@
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react-swc": "^3.3.2",
+    "chokidar-cli": "^3.0.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
   },

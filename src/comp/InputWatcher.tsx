@@ -1,6 +1,7 @@
 import { getTokenLength } from "@/lib/tokenizer";
-import { Badge, Tooltip } from "@mantine/core";
+import { Chip } from "@mantine/core";
 import { useDebouncedValue, useLocalStorage } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { MouseEvent, useCallback, useLayoutEffect, useMemo } from "react";
 
 export const InputWatcher = () => {
@@ -18,6 +19,12 @@ export const InputWatcher = () => {
       e.stopPropagation();
       const el = document.querySelector("form textarea") as HTMLTextAreaElement;
       if (!el) return;
+      if (el.value === text) return;
+      notifications.show({
+        color: "blue",
+        title: "Restored a recent prompt",
+        message: `Because they want you to forget the past everytime`,
+      });
       el.value = text;
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.focus();
@@ -29,24 +36,26 @@ export const InputWatcher = () => {
     // listen for input
     const el = document.querySelector("form textarea") as HTMLTextAreaElement;
     if (!el) return;
-    const handler = (e: KeyboardEvent) => {
+    const handler = (e: Event) => {
       const { value } = e.currentTarget as HTMLTextAreaElement;
       setText(value);
     };
 
-    el.addEventListener("keyup", handler);
-    return () => el.removeEventListener("keyup", handler);
+    el.addEventListener("input", handler);
+    return () => el.removeEventListener("input", handler);
   }, []);
 
   return (
-    <Tooltip label="Restore last text">
-      <Badge
-        color={length > 2000 ? "red" : "blue"}
-        size="xs"
-        onClick={handleBadgeClick}
-      >
-        {length} Tokens
-      </Badge>
-    </Tooltip>
+    <Chip
+      color={length > 2000 ? "red" : "blue"}
+      size="xs"
+      variant={length ? "light" : "outline"}
+      onClick={handleBadgeClick}
+      style={{ cursor: length ? "pointer" : "none" }}
+      checked={false}
+      title="Restore last text"
+    >
+      {length} Token{length > 1 && "s"}
+    </Chip>
   );
 };
