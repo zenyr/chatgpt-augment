@@ -5,7 +5,7 @@ export const useFormElements = () => {
     document.querySelector("main form") as HTMLFormElement
   );
   const textareaRef = useRef<HTMLTextAreaElement>(
-    formRef.current.querySelector("textarea")
+    formRef.current.querySelector("textarea") as HTMLTextAreaElement
   );
   const parent = useRef(formRef.current.parentElement);
   if (!parent.current) throw new Error("Impossiburu!");

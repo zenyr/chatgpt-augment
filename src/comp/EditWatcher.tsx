@@ -1,35 +1,25 @@
-import { getTokenLength } from "@/lib/tokenizer";
-import { Badge, Group, Portal } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useDetachment } from "@/lib/hooks/useDetachment";
+import { Group, Portal } from "@mantine/core";
+import { useRef } from "react";
+import { InputWatcher } from "./InputWatcher";
+import { SelectionWatcher } from "./SelectionWatcher";
 
-type Props = { node: HTMLElement; done: () => void };
+type Props = { node: HTMLElement; done: (node?: HTMLElement) => void };
 
-export const EditWatcher = ({ node }: Props) => {
-  const [value, setValue] = useState(() => {
-    const el = node.querySelector("textarea") as HTMLTextAreaElement;
-    return el?.value || "";
-  });
-  const target = node.querySelector("div");
+export const EditWatcher = ({ node, done }: Props) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(
+    node.querySelector("textarea")
+  );
+  const portalRef = useRef<HTMLDivElement>(node.querySelector("div"));
+  useDetachment(textareaRef.current, done);
 
-  // watch edit messages
-  useEffect(() => {
-    const el = node.querySelector("textarea") as HTMLTextAreaElement;
-    if (!el) return;
-    const handler = (e: Event) => {
-      const { value } = e.currentTarget as HTMLTextAreaElement;
-      setValue(value);
-    };
-    el.addEventListener("input", handler);
-
-    // install token counter
-    return () => el.removeEventListener("input", handler);
-  }, []);
-  return target ? (
-    <Portal target={target}>
-      <Group m="xs" align="center">
-        <Badge variant="filled" color="gray">
-          {getTokenLength(value)} Tokens
-        </Badge>
+  return portalRef.current ? (
+    <Portal target={portalRef.current}>
+      <Group spacing="xs" m={4} align="center">
+        {textareaRef.current && <InputWatcher textarea={textareaRef.current} isEdit/>}
+        {textareaRef.current && (
+          <SelectionWatcher textarea={textareaRef.current} isEdit />
+        )}
       </Group>
     </Portal>
   ) : null;

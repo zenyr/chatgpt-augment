@@ -1,4 +1,3 @@
-import { useFormElements } from "@/lib/hooks/useFormElements";
 import { useJson } from "@/lib/hooks/useJson";
 import { getTextExpander } from "@/lib/textExpander";
 import { ActionIcon, Select } from "@mantine/core";
@@ -12,11 +11,12 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { MacroAddModal } from "./MacroAddModal";
 
-export const SelectionWatcher = () => {
+type Props = { textarea: HTMLTextAreaElement; isEdit?: boolean };
+
+export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const selection = useTextSelection();
   const [openAddmodal, { open, close }] = useDisclosure(false);
   const { json, set, remove } = useJson();
-  const elements = useFormElements();
   const delRef = useRef<string | null>(null);
 
   const handleConfirm = useCallback(
@@ -43,7 +43,7 @@ export const SelectionWatcher = () => {
     [remove]
   );
   const handleClearText = useCallback(() => {
-    const el = elements.textarea;
+    const el = textarea;
     if (!el) return;
     if (!el.value && !!delRef.current) {
       notifications.show({
@@ -77,7 +77,7 @@ export const SelectionWatcher = () => {
   const handleSelect = useCallback(
     (value: string) => {
       if (!value) return;
-      const el = elements.textarea;
+      const el = textarea;
       if (!el) return;
       const { selectionStart, selectionEnd } = el;
       const cursorFound = value.indexOf(":cursor:");
@@ -97,7 +97,7 @@ export const SelectionWatcher = () => {
   );
 
   useLayoutEffect(() => {
-    const el = elements.textarea;
+    const el = textarea;
     if (!el) return;
     const handler = getHotkeyHandler([
       [
@@ -175,15 +175,17 @@ export const SelectionWatcher = () => {
         onChange={handleSelect}
         style={{ maxWidth: 100 }}
       />
-      <ActionIcon
-        size="sm"
-        color="gray"
-        variant="filled"
-        onClick={open}
-        radius="xl"
-      >
-        <IconPlus size={12} />
-      </ActionIcon>
+      {!isEdit && (
+        <ActionIcon
+          size="sm"
+          color="gray"
+          variant="filled"
+          onClick={open}
+          radius="xl"
+        >
+          <IconPlus size={12} />
+        </ActionIcon>
+      )}
     </>
   );
 };

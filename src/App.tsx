@@ -1,14 +1,20 @@
 import { MutationWatcher } from "@/comp/MutationWatcher";
-import { Group, MantineProvider, Text, Transition } from "@mantine/core";
+import {
+  Group,
+  MantineProvider,
+  Text,
+  Transition,
+  createEmotionCache,
+} from "@mantine/core";
 import { useToggle, useViewportSize } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
-import json from "../package.json";
-import { InputWatcher } from "./comp/InputWatcher";
-import { SelectionWatcher } from "./comp/SelectionWatcher";
-import { createEmotionCache } from "@mantine/core";
-import { JSONFormatter } from "./comp/JSONFormatter";
 import { useEffect, useState } from "react";
+import json from "../package.json";
 import { ClickThrougher } from "./comp/ClickThrougher";
+import { InputWatcher } from "./comp/InputWatcher";
+import { JSONFormatter } from "./comp/JSONFormatter";
+import { SelectionWatcher } from "./comp/SelectionWatcher";
+import { useFormElements } from "./lib/hooks/useFormElements";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -19,6 +25,7 @@ export const MiniApp = ({ html }: Props) => {
   const [visible, toggle] = useToggle([true, false]);
   const [mounted, setMounted] = useState(false);
   const isWide = useViewportSize().width > 500;
+  const { textarea } = useFormElements();
   useEffect(() => {
     setTimeout(() => setMounted(true), 5);
   }, []);
@@ -67,8 +74,8 @@ export const MiniApp = ({ html }: Props) => {
             >
               <ClickThrougher />
               <MutationWatcher />
-              <InputWatcher />
-              <SelectionWatcher />
+              <InputWatcher textarea={textarea} />
+              <SelectionWatcher textarea={textarea} />
               <JSONFormatter />
               <Notifications position="top-right" />
             </Group>

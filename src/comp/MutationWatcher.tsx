@@ -11,7 +11,7 @@ const healthcheck = throttle(() => {
 
 export const MutationWatcher = () => {
   const continueRef = useRef<HTMLElement | null>(null);
-  const editRef = useRef<HTMLElement | null>(null);
+  const editRef = useRef<Set<HTMLElement>>(new Set());
   const [rev, setRev] = useState(0);
   const update = useCallback(() => setRev((r) => r + 1), []);
 
@@ -20,7 +20,7 @@ export const MutationWatcher = () => {
     []
   );
   const clearEditNode = useCallback(
-    () => ((editRef.current = null), update()),
+    (node?: HTMLElement) => (node && editRef.current.delete(node), update()),
     []
   );
 
@@ -33,18 +33,10 @@ export const MutationWatcher = () => {
       if (node.textContent === "Save & SubmitCancel") {
         const parent = node.parentNode;
         if (parent && parent instanceof HTMLElement) {
-          editRef.current = parent;
+          editRef.current.add(parent);
           update();
         }
       }
-    }
-  }, []);
-
-  const scanRemovedNode = useCallback((node: Node) => {
-    if (node instanceof HTMLElement) {
-      // not working? why?
-      if (node.className == continueRef.current?.className) clearContinueNode();
-      if (node.className == editRef.current?.className) clearEditNode();
     }
   }, []);
 
@@ -52,8 +44,6 @@ export const MutationWatcher = () => {
     mutations.forEach((mutation) => {
       const addedNodes = Array.from(mutation.addedNodes);
       addedNodes.forEach(scanAddedNode);
-      const removedNodes = Array.from(mutation.removedNodes);
-      removedNodes.forEach(scanRemovedNode);
     });
     healthcheck();
   }, []);
@@ -79,9 +69,9 @@ export const MutationWatcher = () => {
       {continueRef.current && (
         <ContinueClicker node={continueRef.current} done={clearContinueNode} />
       )}
-      {editRef.current && (
-        <EditWatcher key={rev} node={editRef.current} done={clearEditNode} />
-      )}
+      {Array.from(editRef.current).map((node, idx) => (
+        <EditWatcher key={`${rev}_${idx}`} node={node} done={clearEditNode} />
+      ))}
     </>
   );
 };
