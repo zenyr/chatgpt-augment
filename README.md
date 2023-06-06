@@ -1,15 +1,31 @@
 # ChatGPT-Augment Chrome Extension
 
 ![ChatGPT-Augment Logo](public/icon64.png)
+
 - ~~Wow what an ugly-ass logo it is~~
+
+**TL;DR:**
+
+ChatGPT-Augment is a Chrome extension that enhances your ChatGPT experience by adding useful features.
+
+Install the extension by downloading the latest version from the [Releases](https://github.com/zenyr/chatgpt-augment/releases) page and following the installation steps. The extension is built using React, Vite, Mantine, and ChatGPT. Feedback and support can be provided through email or by submitting issues/PRs on GitHub. The project is licensed under the WTFPL License.
+
+---
+
+# Intro
 
 Welcome to **ChatGPT-Augment**! This Chrome extension enhances your chat experience by adding several useful features. With ChatGPT-Augment, you can auto-continue conversations, use macros to expand shorthand, count tokens in real-time, restore prompts, clear prompts with a single click, scroll over gradients, and even format JSON easily.
 
 Yes, you guessed it. This Readme is also written by ChatGPT.
 
 # Screenshots
+
 ![Main screenshot](img/main.png)
-![Add a macro modal](img/addmodal.png)
+
+| Image                                  | Description                                                                                           |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ![Text expander](img/expander.gif)     | - Select a shorthand and press `Ctrl/Cmd+E`. <br/> - use `:cursor:` to designate the cursor position. |
+| ![Add a macro modal](img/addmodal.png) | Add/Overwrite/Delete macros here.                                                                     |
 
 # Features
 
@@ -45,7 +61,7 @@ These features collectively elevate your chat interactions, saving you time, imp
 
 # Installation
 
-Because of me being a lazy butt, you got to install this extension on your own. (Also I do not want to add another one-off garbage to the Chrome Extension Store) 
+Because of me being a lazy butt, you got to install this extension on your own. (Also I do not want to add another one-off garbage to the Chrome Extension Store)
 
 To install ChatGPT-Augment on your Chrome browser, follow these steps:
 
@@ -75,9 +91,9 @@ ChatGPT-Augment is built using the following technologies:
 
 - React ⚛
 - Vite
-    - ergo, Rollup
+  - ergo, Rollup
 - Mantine
-    - ergo, @tabler/icons-react
+  - ergo, @tabler/icons-react
 - ChatGPT :wink: :wink:
 
 ## Feedback and Support
