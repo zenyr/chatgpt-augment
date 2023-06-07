@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPT DOM Mutation Extension",
+  "name": "ChatGPT Augment",
   "version": "1.3.2",
   "description": "Welcome to ChatGPT-Augment! This Chrome extension enhances your chat experience by adding several useful features. With ChatGPT-Augment, you can auto-continue conversations, use macros to expand shorthand, count tokens in real-time, restore prompts, clear prompts with a single click, scroll over gradients, and even format JSON easily.",
   "content_scripts": [
