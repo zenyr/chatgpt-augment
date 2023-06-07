@@ -1,11 +1,12 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.3.1",
+  "version": "1.3.2",
   "type": "module",
   "license": "WTFPL",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node ./scripts/match-versions.mjs",
     "build": "tsc && vite build",
     "watch": "chokidar \"**/*.{tsx,ts}\" -c \"vite build\"",
     "preview": "vite preview"
