@@ -11,18 +11,20 @@ import {
   useState,
 } from "react";
 
-type Props = { textarea: HTMLTextAreaElement | null; isEdit?: boolean };
-export const InputWatcher = ({ textarea, isEdit }: Props) => {
-  const [text, setText] = useState(textarea?.value || "");
-  const [debouncedText] = useDebouncedValue(text, 100);
+type Props = { textarea: HTMLTextAreaElement | null };
+export const InputWatcher = ({ textarea }: Props) => {
   const [savedText, setSavedText] = useLocalStorage({
     key: "prompt",
-    defaultValue: text,
-    getInitialValueInEffect: true,
+    defaultValue: "",
   });
+  const [text, setText] = useState(savedText);
+  const [debouncedText] = useDebouncedValue(text, 100);
   const length = useMemo(() => getTokenLength(debouncedText), [debouncedText]);
 
-  useEffect(() => setSavedText(debouncedText), [debouncedText]);
+  useEffect(
+    () => void (debouncedText && setSavedText(debouncedText)),
+    [debouncedText]
+  );
 
   const handleBadgeClick = useCallback(
     (e: MouseEvent) => {
@@ -49,7 +51,7 @@ export const InputWatcher = ({ textarea, isEdit }: Props) => {
     if (!el) return;
     const handler = (e: Event) => {
       const { value } = e.currentTarget as HTMLTextAreaElement;
-      if (!value && !isEdit) return; // protect against accidental deletion
+      if (e.type === "focus" && !value) return; // protect against accidental deletion
       setText(value);
     };
     setText(el.value);

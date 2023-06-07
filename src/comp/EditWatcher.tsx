@@ -16,7 +16,7 @@ export const EditWatcher = ({ node, done }: Props) => {
   return portalRef.current ? (
     <Portal target={portalRef.current}>
       <Group spacing="xs" m={4} align="center">
-        {textareaRef.current && <InputWatcher textarea={textareaRef.current} isEdit/>}
+        {textareaRef.current && <InputWatcher textarea={textareaRef.current} />}
         {textareaRef.current && (
           <SelectionWatcher textarea={textareaRef.current} isEdit />
         )}
