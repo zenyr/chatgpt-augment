@@ -19,7 +19,9 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: |
+          yarn set version classic
+          yarn install --immutable
 
       - name: Build extension
         run: yarn build
