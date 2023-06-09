@@ -5,7 +5,7 @@
   "type": "module",
   "license": "WTFPL",
   "scripts": {
-    "build": "node ./scripts/match-versions.mjs && tsc && vite build && node ./scripts/add-banners.mjs",
+    "build": "node ./scripts/match-versions.mjs && tsc && NODE_ENV=production vite build && NODE_ENV=production node ./scripts/add-banners.mjs",
     "dev": "vite dev",
     "preview": "vite preview"
   },
