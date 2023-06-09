@@ -11,8 +11,17 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { MacroAddModal } from "./MacroAddModal";
 
-type Props = { textarea: HTMLTextAreaElement; isEdit?: boolean };
+const getLastWordAndSelect = (el: HTMLTextAreaElement) => {
+  const { value, selectionStart } = el;
+  const before = value.slice(0, selectionStart);
+  const beforeWords = before.split(/\s/);
+  const lastWord = beforeWords[beforeWords.length - 1];
+  el.selectionStart = selectionStart - lastWord.length;
+  el.selectionEnd = selectionStart;
+  return lastWord;
+};
 
+type Props = { textarea: HTMLTextAreaElement; isEdit?: boolean };
 export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const selection = useTextSelection();
   const [openAddmodal, { open, close }] = useDisclosure(false);
@@ -105,9 +114,8 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
         async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (!selection) return;
-          const text = selection.toString();
-          if (!text) return;
+          const text = selection?.toString() || getLastWordAndSelect(el) || "";
+
           const expanded = textExpander(text);
           if (expanded instanceof Error) {
             notifications.show({
