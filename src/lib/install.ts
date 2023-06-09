@@ -1,6 +1,6 @@
 import React from "react";
 import { MiniApp } from "@/App";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { Root, createRoot } from "react-dom/client";
 
 let root: Root;

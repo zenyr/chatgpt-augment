@@ -6,7 +6,12 @@ import {
   Transition,
   createEmotionCache,
 } from "@mantine/core";
-import { useToggle, useViewportSize } from "@mantine/hooks";
+import {
+  useColorScheme,
+  useLocalStorage,
+  useToggle,
+  useViewportSize,
+} from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import json from "../package.json";
@@ -23,6 +28,10 @@ const cache = createEmotionCache({
 type Props = { html: string };
 export const MiniApp = ({ html }: Props) => {
   const [visible, toggle] = useToggle([true, false]);
+  const [theme] = useLocalStorage<"light" | "dark">({ key: "theme" });
+  const systemScheme = useColorScheme();
+  const colorScheme =
+    !theme || (theme as string) === "system" ? systemScheme : theme;
   const [mounted, setMounted] = useState(false);
   const isWide = useViewportSize().width > 500;
   const { textarea } = useFormElements();
@@ -30,7 +39,7 @@ export const MiniApp = ({ html }: Props) => {
     setTimeout(() => setMounted(true), 5);
   }, []);
   return (
-    <MantineProvider emotionCache={cache} theme={{ colorScheme: "dark" }}>
+    <MantineProvider emotionCache={cache} theme={{ colorScheme }}>
       <Transition
         mounted={mounted}
         transition="pop"

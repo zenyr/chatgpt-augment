@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Augment",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Enhance chat with ChatGPT-Augment: auto-continue, macros, token count, prompts, gradients, JSON format.",
   "content_scripts": [
     {
@@ -9,9 +9,8 @@
         "https://chat.openai.com/*"
       ],
       "js": [
-        "chatgpt-augment.js"
-      ],
-      "run_at": "document_idle"
+        "src/main.ts"
+      ]
     }
   ],
   "icons": {

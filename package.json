@@ -1,22 +1,23 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "module",
   "license": "WTFPL",
   "scripts": {
-    "prebuild": "node ./scripts/match-versions.mjs",
-    "build": "tsc && vite build",
-    "dev": "chokidar \"**/*.{tsx,ts}\" -c \"vite build\"",
+    "build": "node ./scripts/match-versions.mjs && tsc && vite build && node ./scripts/add-banners.mjs",
+    "dev": "vite dev",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@crxjs/vite-plugin": "beta",
     "@types/lodash": "^4.14.195",
     "@types/node-emoji": "^1.8.2",
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "chokidar-cli": "^3.0.0",
+    "rollup-plugin-visualizer": "^5.9.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
   },

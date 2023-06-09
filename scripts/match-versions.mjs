@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
 
 const PKG_PATH = "package.json";
-const MANIFEST_PATH = resolve("public", "manifest.json");
+const MANIFEST_PATH = resolve("manifest.json");
 
 const matchVersion = async () => {
   try {
@@ -14,10 +14,15 @@ const matchVersion = async () => {
     manifest.version = version;
 
     await fs.writeFile(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
-    console.log("Version copied successfully!");
   } catch (error) {
     console.error("Error:", error);
   }
 };
 
-matchVersion();
+matchVersion().then(()=>{
+  console.log("Done matching version!");
+  process.exit(0);
+}).catch((e)=>{
+  console.error(e);
+  process.exit(1);
+});

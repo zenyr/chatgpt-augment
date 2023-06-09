@@ -1,10 +1,10 @@
 import { parse } from "chrono-node";
-import { memoize } from "lodash";
-import { compose } from "lodash/fp";
-import * as emoji from "node-emoji";
+import compose from "lodash/fp/compose";
+import memoize from "lodash/memoize";
+import { emojify } from "node-emoji";
 
 const tryChrono = (input: string | Error) => {
-  if (input instanceof Error) return input;
+  if (input instanceof Error || !parse) return input;
   const results = parse(input, new Date());
   if (results.length === 0) return input; // continue
   if (results.length > 1) return input; // don't know how to deal with this
@@ -27,8 +27,8 @@ const tryChrono = (input: string | Error) => {
 };
 
 const tryEmoji = (input: string | Error) => {
-  if (input instanceof Error) return input;
-  return emoji.emojify(input);
+  if (input instanceof Error || !emojify) return input;
+  return emojify(input);
 };
 
 const tryStringify = (input: string | Error) => {

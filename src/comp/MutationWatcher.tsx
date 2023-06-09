@@ -1,5 +1,5 @@
 import { installApp } from "@/lib/install";
-import { throttle } from "lodash";
+import throttle from "lodash/throttle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContinueClicker } from "./ContinueClicker";
 import { EditWatcher } from "./EditWatcher";
