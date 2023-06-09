@@ -12,6 +12,7 @@ export default {
   },
   build: {
     target: "modules",
+    minify: false,
     lib: {
       entry: "src/main.ts",
       formats: ["es"],
