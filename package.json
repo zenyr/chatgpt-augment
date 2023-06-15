@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "type": "module",
   "license": "WTFPL",
   "scripts": {
@@ -32,7 +32,8 @@
     "lodash": "^4.17.21",
     "node-emoji": "^2.0.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "reactflow": "^11.7.2"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@3.6.0"
 }

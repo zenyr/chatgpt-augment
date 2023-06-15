@@ -1,8 +1,8 @@
 import { encode } from "@/lib/gpt3TokenizerUnobfuscated";
-import { ActionIcon, Chip, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge } from "@mantine/core";
 import { useDebouncedValue, useLocalStorage } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCoin } from "@tabler/icons-react";
+import { IconCircleArrowUp, IconCoin } from "@tabler/icons-react";
 import {
   MouseEvent,
   useCallback,
@@ -70,29 +70,35 @@ export const InputWatcher = ({ textarea }: Props) => {
 
   return (
     <>
-      <Chip
-        color={tokens.length > 3000 ? "red" : "blue"}
+      <Badge
+        color={tokens.length > 3000 ? "red" : "gray"}
         size="xs"
-        variant={tokens ? "light" : "outline"}
-        onClick={handleBadgeClick}
-        style={{ cursor: tokens ? "pointer" : "none" }}
-        checked={false}
-        title="Restore last text"
+        leftSection={
+          <ActionIcon
+            size="sm"
+            radius="xl"
+            variant="transparent"
+            onClick={handleBadgeClick}
+            title="Restore last text"
+          >
+            <IconCircleArrowUp size={12} />
+          </ActionIcon>
+        }
+        rightSection={
+          <ActionIcon
+            size="sm"
+            radius="xl"
+            variant="transparent"
+            disabled={!tokens.length}
+            onClick={() => setOpenTokens(true)}
+            title="Token visualizer"
+          >
+            <IconCoin size={12} />
+          </ActionIcon>
+        }
       >
         {tokens.length.toLocaleString()} Token{tokens.length > 1 && "s"}
-      </Chip>
-      <Tooltip label="Token visualizer" withArrow>
-        <ActionIcon
-          size="sm"
-          color="gray"
-          variant="filled"
-          radius="xl"
-          disabled={!tokens.length}
-          onClick={() => setOpenTokens(true)}
-        >
-          <IconCoin size={14} />
-        </ActionIcon>
-      </Tooltip>
+      </Badge>
       <TokenReaderModal
         tokens={tokens}
         opened={openTokens}

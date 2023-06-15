@@ -17,7 +17,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconScissors } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 const checkBr = (char: string | number) =>
   char === "\n" ? { display: "flex", flex: 1 } : {};
@@ -117,7 +117,7 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                 `}
               >
                 {parsed.map(([char, token], i) => (
-                  <>
+                  <Fragment key={i}>
                     {i &&
                     ((slice100 && i % 100 === 0) ||
                       (slice1000 && i % 1000 === 0)) ? (
@@ -139,7 +139,6 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                       ).toLocaleString()} / Text: "${char}" (${char
                         .charCodeAt(0)
                         .toLocaleString()}) / Token: ${token.toLocaleString()}`}
-                      key={i}
                       withinPortal
                     >
                       <ruby style={checkBr(char)}>
@@ -147,7 +146,7 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                         <rt>{inverse ? char : token}</rt>
                       </ruby>
                     </Tooltip>
-                  </>
+                  </Fragment>
                 ))}
               </Text>
             </Paper>
