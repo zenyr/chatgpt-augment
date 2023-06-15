@@ -59,7 +59,7 @@ function get_pairs(word: string | string[]) {
 }
 
 const pat =
-  /'s|'t|'re|'ve|'m|'l l|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+/gu;
+  /'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+/gu;
 
 const decoder: Record<number, string> = {};
 Object.keys(encoder).forEach(
@@ -80,11 +80,11 @@ Object.keys(byte_encoder).map((x) => {
 });
 
 const bpe_ranks = dictZip(bpe_merges, range(0, bpe_merges.length));
-const cache: Record<string, string> = {};
+const cache = new Map<string, string>();
 
 function bpe(token: string) {
-  if (token in cache) {
-    return cache[token];
+  if (cache.has(token)) {
+    return cache.get(token) as string;
   }
 
   let word = token.split("");
@@ -148,7 +148,7 @@ function bpe(token: string) {
   }
 
   const result = word.join(" ");
-  cache[token] = result;
+  cache.set(token, result);
 
   return result;
 }
