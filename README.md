@@ -1,8 +1,6 @@
 # ChatGPT-Augment Chrome Extension
 
-![ChatGPT-Augment Logo](public/icon64.png)
-
-- ~~Wow what an ugly-ass logo it is~~
+![ChatGPT-Augment Logo](img/logo.png)
 
 **TL;DR:**
 
