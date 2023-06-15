@@ -1,7 +1,8 @@
-import { getTokenLength } from "@/lib/tokenizer";
-import { Chip } from "@mantine/core";
+import { encode } from "@/lib/gpt3TokenizerUnobfuscated";
+import { ActionIcon, Chip, Tooltip } from "@mantine/core";
 import { useDebouncedValue, useLocalStorage } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { IconCoin } from "@tabler/icons-react";
 import {
   MouseEvent,
   useCallback,
@@ -10,6 +11,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { TokenReaderModal } from "./TokenReaderModal";
 
 type Props = { textarea: HTMLTextAreaElement | null };
 export const InputWatcher = ({ textarea }: Props) => {
@@ -19,7 +21,10 @@ export const InputWatcher = ({ textarea }: Props) => {
   });
   const [text, setText] = useState(savedText);
   const [debouncedText] = useDebouncedValue(text, 100);
-  const length = useMemo(() => getTokenLength(debouncedText), [debouncedText]);
+  const [openTokens, setOpenTokens] = useState(false);
+
+  // const length = useMemo(() => getTokenLength(debouncedText), [debouncedText]);
+  const tokens = useMemo(() => encode(debouncedText), [debouncedText]);
 
   useEffect(
     () => void (debouncedText && setSavedText(debouncedText)),
@@ -64,16 +69,35 @@ export const InputWatcher = ({ textarea }: Props) => {
   }, [textarea]);
 
   return (
-    <Chip
-      color={length > 2000 ? "red" : "blue"}
-      size="xs"
-      variant={length ? "light" : "outline"}
-      onClick={handleBadgeClick}
-      style={{ cursor: length ? "pointer" : "none" }}
-      checked={false}
-      title="Restore last text"
-    >
-      {length} Token{length > 1 && "s"}
-    </Chip>
+    <>
+      <Chip
+        color={tokens.length > 3000 ? "red" : "blue"}
+        size="xs"
+        variant={tokens ? "light" : "outline"}
+        onClick={handleBadgeClick}
+        style={{ cursor: tokens ? "pointer" : "none" }}
+        checked={false}
+        title="Restore last text"
+      >
+        {tokens.length.toLocaleString()} Token{tokens.length > 1 && "s"}
+      </Chip>
+      <Tooltip label="Token visualizer" withArrow>
+        <ActionIcon
+          size="sm"
+          color="gray"
+          variant="filled"
+          radius="xl"
+          disabled={!tokens.length}
+          onClick={() => setOpenTokens(true)}
+        >
+          <IconCoin size={14} />
+        </ActionIcon>
+      </Tooltip>
+      <TokenReaderModal
+        tokens={tokens}
+        opened={openTokens}
+        onCancel={() => setOpenTokens(false)}
+      />
+    </>
   );
 };

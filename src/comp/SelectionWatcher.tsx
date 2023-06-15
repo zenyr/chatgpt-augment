@@ -1,6 +1,6 @@
 import { useJson } from "@/lib/hooks/useJson";
 import { getTextExpander } from "@/lib/textExpander";
-import { ActionIcon, Select } from "@mantine/core";
+import { ActionIcon, Select, Tooltip } from "@mantine/core";
 import {
   getHotkeyHandler,
   useDisclosure,
@@ -156,15 +156,17 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   }, [selection, textExpander]);
   return (
     <>
-      <ActionIcon
-        size="sm"
-        color="gray"
-        variant="filled"
-        onClick={handleClearText}
-        radius="xl"
-      >
-        <IconTrash size={12} />
-      </ActionIcon>
+      <Tooltip label="Clear text" withArrow>
+        <ActionIcon
+          size="sm"
+          color="gray"
+          variant="filled"
+          onClick={handleClearText}
+          radius="xl"
+        >
+          <IconTrash size={12} />
+        </ActionIcon>
+      </Tooltip>
       <MacroAddModal
         macros={json}
         opened={openAddmodal}
@@ -184,15 +186,17 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
         style={{ maxWidth: 100 }}
       />
       {!isEdit && (
-        <ActionIcon
-          size="sm"
-          color="gray"
-          variant="filled"
-          onClick={open}
-          radius="xl"
-        >
-          <IconPlus size={12} />
-        </ActionIcon>
+        <Tooltip label="Add/edit macros" withArrow>
+          <ActionIcon
+            size="sm"
+            color="gray"
+            variant="filled"
+            onClick={open}
+            radius="xl"
+          >
+            <IconPlus size={12} />
+          </ActionIcon>
+        </Tooltip>
       )}
     </>
   );

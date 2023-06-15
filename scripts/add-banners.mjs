@@ -5,9 +5,9 @@ const BANNER_GPT = `/**
 * This file contains a bunch of encoded tokens 
 * that are used to encode the string to estimate GPT-3 token length.
 * 
-* The huge array and the content of this script is NOT obfuscated.
-* (this is "cl100k_base token" written in javascript)
-* See: https://gpt-tokenizer.dev/
+* The huge content of this script is NOT obfuscated.
+* (this is "GPT-3 tokens" written in javascript, unobfuscated for your review)
+* See: https://github.com/openai/GPT-3-Encoder/blob/79387f/Encoder.js
 */
 `;
 const BANNER_VENDOR = `/**
@@ -34,10 +34,8 @@ import path from "path";
  * @param {string} fileName
  */
 async function getModules(fileName) {
-  const output = (await import("../vite.config.rollup.js")).default.output;
-  if (!output || Array.isArray(output)) return "";
-  const chunks = output.manualChunks;
-  if (!chunks) return "";
+  const chunks = (await import("../vite.config.rollup.js")).chunks;
+  if (!chunks || Array.isArray(chunks)) return "";
   const vndName = /(vnd.[^-]+)/.exec(fileName)?.[1];
   const found = vndName && chunks[vndName];
   if (!found) return "";
@@ -51,7 +49,7 @@ async function addPrefixToFiles() {
     if (file.endsWith(".js")) {
       const filePath = path.join("dist/assets", file);
       const content = await fs.readFile(filePath, "utf8");
-      const isGptTokenizer = filePath.includes("gotTokenizer");
+      const isGptTokenizer = filePath.includes("gpt3");
       const isMain = filePath.includes("main") && !filePath.includes("loader");
       const modules = await getModules(path.basename(filePath));
       const prefixedContent = `${

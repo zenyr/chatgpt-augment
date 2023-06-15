@@ -1,15 +1,30 @@
 import { ClassNames } from "@emotion/react";
 import {
+  Autocomplete,
   Button,
   Group,
   Modal,
   ScrollArea,
   Stack,
   Text,
-  TextInput,
   Textarea,
 } from "@mantine/core";
-import { MouseEvent, useCallback, useState } from "react";
+import { MouseEvent, forwardRef, useCallback, useState } from "react";
+
+type ItemProps = {
+  prompt: string;
+  value: string;
+};
+const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
+  ({ value, prompt, ...others }: ItemProps, ref) => (
+    <div ref={ref} {...others}>
+      <Group noWrap align="center" position="apart">
+        <Text weight="700">{value}</Text>
+        <Text color="dimmed">{prompt}</Text>
+      </Group>
+    </div>
+  )
+);
 
 function createAbbreviation(input: string): string {
   const words = input.split(/\s+/); // Split input into an array of words
@@ -47,7 +62,17 @@ export const MacroAddModal = ({
     (e: MouseEvent) => (e.preventDefault(), onDelete(trueShortcut)),
     [trueShortcut]
   );
+  const handleShortcutBlur = useCallback(() => {
+    const matching = macros[shortcut];
+    if (matching && !prompt) {
+      setPrompt(matching);
+    }
+  }, [shortcut, prompt]);
   const exists = opened && macros[trueShortcut];
+  const data = Object.entries(macros).map(([key, value]) => ({
+    prompt: `${value.slice(0, 30)}${value.length > 30 ? "..." : ""}`,
+    value: key,
+  }));
 
   return (
     <ClassNames>
@@ -74,11 +99,15 @@ export const MacroAddModal = ({
             <Text size="xs" color="gray">
               Add commonly used prompts as you wish.
             </Text>
-            <TextInput
+            <Autocomplete
               label="Shortcut"
               placeholder="smh"
+              withAsterisk
               value={trueShortcut}
-              onChange={(e) => setShortcut(e.currentTarget.value)}
+              onChange={setShortcut}
+              onBlur={handleShortcutBlur}
+              itemComponent={AutoCompleteItem}
+              data={data}
               variant="filled"
               error={
                 exists ? (
@@ -131,7 +160,12 @@ export const MacroAddModal = ({
               >
                 Cancel
               </Button>
-              <Button radius="xs" variant="outline" onClick={handleConfirm} disabled={!trueShortcut || !prompt}>
+              <Button
+                radius="xs"
+                variant="outline"
+                onClick={handleConfirm}
+                disabled={!trueShortcut || !prompt}
+              >
                 {exists ? "Overwrite" : "Add"}
               </Button>
             </Group>

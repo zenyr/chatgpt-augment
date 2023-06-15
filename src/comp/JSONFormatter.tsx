@@ -6,6 +6,7 @@ import {
   Modal,
   Stack,
   Text,
+  Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconJson } from "@tabler/icons-react";
@@ -15,9 +16,17 @@ export const JSONFormatter = () => {
 
   return (
     <>
-      <ActionIcon onClick={open} size="sm" color="gray" variant="filled">
-        <IconJson size={16} />
-      </ActionIcon>
+      <Tooltip label="JSON Formatter" withArrow>
+        <ActionIcon
+          onClick={open}
+          size="sm"
+          color="gray"
+          variant="filled"
+          radius="xl"
+        >
+          <IconJson size={14} />
+        </ActionIcon>
+      </Tooltip>
       <Modal
         opened={opened}
         onClose={close}

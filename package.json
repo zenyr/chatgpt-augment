@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.6.0",
   "type": "module",
   "license": "WTFPL",
   "scripts": {
@@ -29,7 +29,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@tabler/icons-react": "^2.21.0",
     "chrono-node": "^2.6.3",
-    "gpt-tokenizer": "^2.1.1",
     "lodash": "^4.17.21",
     "node-emoji": "^2.0.2",
     "react": "^18.2.0",
