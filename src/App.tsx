@@ -21,7 +21,6 @@ import { InputWatcher } from "./comp/InputWatcher";
 import { JSONFormatter } from "./comp/JSONFormatter";
 import { SelectionWatcher } from "./comp/SelectionWatcher";
 import { useFormElements } from "./lib/hooks/useFormElements";
-import { TreeSorter } from "./comp/TreeSorter";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",

@@ -1,19 +1,15 @@
 import { ClassNames } from "@emotion/react";
-import {
-  MantineProvider,
-  Paper,
-  Portal
-} from "@mantine/core";
+import { MantineProvider, Paper, Portal } from "@mantine/core";
 import { useForceUpdate } from "@mantine/hooks";
 import throttle from "lodash/throttle";
 import { useCallback, useEffect, useId, useMemo } from "react";
 
-type Props = {
-  // onExecute: (prompt: string) => Promise<string>;
-  // onDone: () => void;
-};
+// type Props = {
+//   // onExecute: (prompt: string) => Promise<string>;
+//   // onDone: () => void;
+// };
 
-export const TreeSorter = (props: Props) => {
+export const TreeSorter = () => {
   const id = `tree-${(useId() || "").replace(/:/g, "")}`;
   const update = useForceUpdate();
   const target = document.getElementById(id);
