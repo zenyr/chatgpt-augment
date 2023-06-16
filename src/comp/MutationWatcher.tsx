@@ -3,6 +3,7 @@ import throttle from "lodash/throttle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContinueClicker } from "./ContinueClicker";
 import { EditWatcher } from "./EditWatcher";
+import { useConversations } from "@/lib/hooks/useConversations";
 
 const healthcheck = throttle(() => {
   const app = document.getElementById("chatgpt-augment-app");
@@ -47,7 +48,7 @@ export const MutationWatcher = () => {
     });
     healthcheck();
   }, []);
-
+  useConversations();
   useEffect(() => {
     // install / uninstall observer
     const observer = new MutationObserver(handleMutation);

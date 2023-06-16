@@ -59,14 +59,14 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                 border-radius: ${theme.radius.sm};
                 font-family: ${inverse ? "monospace" : "inherit"};
                 white-space: pre-wrap;
-
-                &:nth-child(3n) {
+                
+                &:nth-of-type(3n) {
                   background: ${theme.fn.rgba(theme.colors.blue[4], opacity)};
                 }
-                &:nth-child(3n + 1) {
+                &:nth-of-type(3n + 1) {
                   background: ${theme.fn.rgba(theme.colors.red[4], opacity)};
                 }
-                &:nth-child(3n + 2) {
+                &:nth-of-type(3n + 2) {
                   background: ${theme.fn.rgba(theme.colors.violet[4], opacity)};
                 }
               }
