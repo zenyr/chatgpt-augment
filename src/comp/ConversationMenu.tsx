@@ -1,7 +1,10 @@
 import { ClassNames } from "@emotion/react";
 import { Menu, Portal } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
+  IconCaretUp,
+  IconCopy,
   IconEdit,
   IconMessage,
   IconShare2,
@@ -9,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+const regDel = /^Delete ".+"\?$/;
 export const ConversationMenu = () => {
   const [target, setTarget] = useState<HTMLAnchorElement | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -17,6 +21,7 @@ export const ConversationMenu = () => {
     setPos({ x, y });
   });
   const ref = useClickOutside(() => setTarget(null));
+  const isDeleting = regDel.test(target?.textContent || '')
 
   const handlers = useMemo(
     () =>
@@ -57,6 +62,32 @@ export const ConversationMenu = () => {
               if (els.length < 3) return; // no share button
               const share = els[1];
               share.click();
+            },
+            copyUrl: async () => {
+              target.click();
+              const els = await handlers.wait?.();
+              if (!els) return;
+              const url = location.href;
+              navigator.clipboard.writeText(url);
+            },
+            pullToTop: async () => {
+              target.click();
+              const els = await handlers.wait?.();
+              if (!els) return;
+              const edit = els[0];
+              const parent = target.parentElement;
+              edit.click();
+              await new Promise((r) => setTimeout(r, 100));
+              const el = parent?.querySelector("input");
+              console.log({ el, parent });
+              if (!el) return;
+              if (el.value.endsWith(" ")) el.value = el.value.slice(0, -1);
+              else el.value = el.value + " ";
+              el.dispatchEvent(new Event("input", { bubbles: true }));
+              const btn = parent?.querySelector(
+                "button"
+              ) as HTMLButtonElement | null;
+              btn?.click();
             },
             delete: async () => {
               target.click();
@@ -129,7 +160,7 @@ export const ConversationMenu = () => {
             ref={ref}
           >
             <Menu
-              opened
+              opened={!isDeleting}
               onChange={() => setTarget(null)}
               position="right"
               withArrow
@@ -139,18 +170,35 @@ export const ConversationMenu = () => {
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Label>{target.textContent}</Menu.Label>
+                <Menu.Divider />
                 {!target.classList.contains("bg-gray-800") && (
-                  <Menu.Item icon={<IconMessage />} onClick={handlers.click}>
+                  <Menu.Item
+                    icon={<IconMessage />}
+                    onClick={handlers.click}
+                    color="indigo"
+                  >
                     Open
                   </Menu.Item>
                 )}
+                {!target.classList.contains("bg-gray-800") && <Menu.Divider />}
                 <Menu.Item icon={<IconEdit />} onClick={handlers.edit}>
                   Edit
                 </Menu.Item>
                 <Menu.Item icon={<IconShare2 />} onClick={handlers.share}>
                   Share...
                 </Menu.Item>
-                <Menu.Item icon={<IconTrash />} onClick={handlers.delete}>
+                <Menu.Item icon={<IconCopy />} onClick={handlers.copyUrl}>
+                  Copy URL
+                </Menu.Item>
+                <Menu.Item icon={<IconCaretUp />} onClick={handlers.pullToTop}>
+                  Pull to top
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item
+                  icon={<IconTrash />}
+                  onClick={handlers.delete}
+                  color="red"
+                >
                   Delete
                 </Menu.Item>
               </Menu.Dropdown>
