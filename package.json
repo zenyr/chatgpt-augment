@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-augment",
   "private": true,
-  "version": "1.6.3",
+  "version": "1.6.4",
   "type": "module",
   "license": "WTFPL",
   "scripts": {
@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "beta",
+    "@types/chrome": "^0.0.237",
     "@types/lodash": "^4.14.195",
     "@types/node-emoji": "^1.8.2",
     "@types/react": "^18.2.8",
