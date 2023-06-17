@@ -24,6 +24,8 @@ Yes, you guessed it. This Readme is also written by ChatGPT.
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | ![Text expander](img/expander.gif)     | - Select a shorthand and press `Ctrl/Cmd+E`. <br/> - use `:cursor:` to designate the cursor position. |
 | ![Add a macro modal](img/addmodal.png) | Add/Overwrite/Delete macros here.                                                                     |
+| ![Menu](img/menu.png)                  | Right click on conversations.                                                                         |
+| ![Tokens](img/tokens.png)              | Get precise token counts locally.                                                                     |
 
 # Features
 
