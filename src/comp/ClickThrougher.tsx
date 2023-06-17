@@ -1,9 +1,9 @@
-import { useFormElements } from "@/lib/hooks/useFormElements";
+import { useElements } from "@/lib/hooks/useElements";
 import { ClassNames } from "@emotion/react";
 import { useLayoutEffect } from "react";
 
 const ClickThroughWorker = ({ className }: { className: string }) => {
-  const { parent } = useFormElements();
+  const { parent } = useElements();
   useLayoutEffect(() => {
     if (parent.classList.contains(className)) return;
     parent.classList.add(className);

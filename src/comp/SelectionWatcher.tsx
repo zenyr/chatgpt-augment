@@ -9,7 +9,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { MacroAddModal } from "./MacroAddModal";
+import { MacroAddModal } from "./modals/MacroAddModal";
 
 const getLastWordAndSelect = (el: HTMLTextAreaElement) => {
   const { value, selectionStart } = el;

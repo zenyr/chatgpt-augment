@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { TokenReaderModal } from "./TokenReaderModal";
+import { TokenReaderModal } from "./modals/TokenReaderModal";
 
 type Props = { textarea: HTMLTextAreaElement | null };
 export const InputWatcher = ({ textarea }: Props) => {

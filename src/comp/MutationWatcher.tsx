@@ -3,7 +3,7 @@ import throttle from "lodash/throttle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContinueClicker } from "./ContinueClicker";
 import { EditWatcher } from "./EditWatcher";
-import { useConversations } from "@/lib/hooks/useConversations";
+import { useJustMounted } from "@/lib/hooks/useJustMounted";
 
 const healthcheck = throttle(() => {
   const app = document.getElementById("chatgpt-augment-app");
@@ -13,6 +13,7 @@ const healthcheck = throttle(() => {
 export const MutationWatcher = () => {
   const continueRef = useRef<HTMLElement | null>(null);
   const editRef = useRef<Set<HTMLElement>>(new Set());
+  const justMounted = useJustMounted();
   const [rev, setRev] = useState(0);
   const update = useCallback(() => setRev((r) => r + 1), []);
 
@@ -48,7 +49,6 @@ export const MutationWatcher = () => {
     });
     healthcheck();
   }, []);
-  useConversations();
   useEffect(() => {
     // install / uninstall observer
     const observer = new MutationObserver(handleMutation);
@@ -67,7 +67,7 @@ export const MutationWatcher = () => {
 
   return (
     <>
-      {continueRef.current && (
+      {!justMounted && continueRef.current && (
         <ContinueClicker node={continueRef.current} done={clearContinueNode} />
       )}
       {Array.from(editRef.current).map((node, idx) => (

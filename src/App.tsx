@@ -17,10 +17,11 @@ import { Notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import json from "../package.json";
 import { ClickThrougher } from "./comp/ClickThrougher";
+import { ConversationMenu } from "./comp/ConversationMenu";
 import { InputWatcher } from "./comp/InputWatcher";
 import { JSONFormatter } from "./comp/JSONFormatter";
 import { SelectionWatcher } from "./comp/SelectionWatcher";
-import { useFormElements } from "./lib/hooks/useFormElements";
+import { useElements } from "./lib/hooks/useElements";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -35,7 +36,7 @@ export const MiniApp = ({ html }: Props) => {
     !theme || (theme as string) === "system" ? systemScheme : theme;
   const [mounted, setMounted] = useState(false);
   const isWide = useViewportSize().width > 500;
-  const { textarea } = useFormElements();
+  const { textarea } = useElements();
   useEffect(() => {
     setTimeout(() => setMounted(true), 5);
   }, []);
@@ -93,7 +94,7 @@ export const MiniApp = ({ html }: Props) => {
                 <InputWatcher textarea={textarea} />
                 <SelectionWatcher textarea={textarea} />
                 <JSONFormatter />
-                {/* <TreeSorter /> */}
+                <ConversationMenu />
                 <Notifications position="top-right" />
               </Group>
             </Group>
