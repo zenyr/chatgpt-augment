@@ -6,7 +6,7 @@
 
 ChatGPT-Augment is a Chrome extension that enhances your ChatGPT experience by adding useful features.
 
-Install the extension by downloading the latest version from the [Releases](https://github.com/zenyr/chatgpt-augment/releases) page and following the installation steps. The extension is built using React, Vite, Mantine, and ChatGPT. Feedback and support can be provided through email or by submitting issues/PRs on GitHub. The project is licensed under the WTFPL License.
+Install the extension by 1. [Download from the Chrome Web Store](https://chrome.google.com/webstore/detail/chatgpt-augment/kgellgcbfceooklmfjcbofaldbacgpbm) or 2. downloading the latest version from the [Releases](https://github.com/zenyr/chatgpt-augment/releases) page and following the installation steps. The extension is built using React, Vite, Mantine, and ChatGPT. Feedback and support can be provided through email or by submitting issues/PRs on GitHub. The project is licensed under the WTFPL License.
 
 ---
 
