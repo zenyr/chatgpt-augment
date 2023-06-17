@@ -1,7 +1,6 @@
 import { ClassNames } from "@emotion/react";
 import { Menu, Portal } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import {
   IconCaretUp,
   IconCopy,
@@ -21,7 +20,7 @@ export const ConversationMenu = () => {
     setPos({ x, y });
   });
   const ref = useClickOutside(() => setTarget(null));
-  const isDeleting = regDel.test(target?.textContent || '')
+  const isDeleting = regDel.test(target?.textContent || "");
 
   const handlers = useMemo(
     () =>
