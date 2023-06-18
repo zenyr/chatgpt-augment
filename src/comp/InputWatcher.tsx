@@ -2,7 +2,7 @@ import { encode } from "@/lib/gpt3TokenizerUnobfuscated";
 import { ActionIcon, Badge } from "@mantine/core";
 import { useDebouncedValue, useLocalStorage } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCircleArrowUp, IconCoin } from "@tabler/icons-react";
+import { IconCircleArrowUp, IconCoin, IconRotate2 } from "@tabler/icons-react";
 import {
   MouseEvent,
   useCallback,
@@ -39,6 +39,7 @@ export const InputWatcher = ({ textarea }: Props) => {
       if (!el) return;
       if (el.value === savedText) return;
       notifications.show({
+        icon: <IconRotate2 />,
         color: "blue",
         title: "Restored a recent prompt",
         message: `Because they want you to forget the past everytime`,

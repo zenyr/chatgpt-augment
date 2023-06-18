@@ -7,7 +7,15 @@ import {
   useTextSelection,
 } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import {
+  IconCodeMinus,
+  IconCodeOff,
+  IconCodePlus,
+  IconEraser,
+  IconPlus,
+  IconRotate2,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { MacroAddModal } from "./modals/MacroAddModal";
 
@@ -31,6 +39,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const handleConfirm = useCallback(
     (key: string, value: string) => {
       notifications.show({
+        icon: <IconCodePlus />,
         color: "blue",
         title: "Added a macro",
         message: `Shorthand: ${key}`,
@@ -43,6 +52,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const handleDelete = useCallback(
     (key: string) => (
       notifications.show({
+        icon: <IconCodeMinus />,
         color: "red",
         title: "Deleted a macro",
         message: `${key} is now a goner.`,
@@ -56,12 +66,14 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
     if (!el) return;
     if (!el.value && !!delRef.current) {
       notifications.show({
+        icon: <IconRotate2 />,
         title: "Restored text",
         message: `Because everybody deserves a second chance`,
       });
       el.value = delRef.current;
     } else {
       notifications.show({
+        icon: <IconEraser />,
         color: "red",
         title: "Cleared text",
         message: `Because delete key needs some rest`,
@@ -119,6 +131,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
           const expanded = textExpander(text);
           if (expanded instanceof Error) {
             notifications.show({
+              icon: <IconCodeOff />,
               color: "black",
               title: "Could not expand text",
               message: expanded.message,
@@ -127,6 +140,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
           }
           if (expanded === text) {
             notifications.show({
+              icon: <IconCodeOff />,
               color: "black",
               title: "Could not expand text",
               message: "No expansion found",

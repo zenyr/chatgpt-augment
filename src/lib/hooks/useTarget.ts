@@ -37,16 +37,16 @@ export const useSelector = <E extends HTMLElement>(
   return el;
 };
 
-export const useRenderTarget = (selector: string) => {
+export const useRootTarget = (selector: string) => {
   const target = useSelector(selector);
   const [orgHtml, setOrgHtml] = useState("");
 
   useEffect(() => {
-    if (target && !orgHtml) {
+    if (target) {
       setOrgHtml(target.innerHTML || "ChatGPT");
       target.innerHTML = "";
     }
-  }, [target, orgHtml]);
+  }, [target]);
 
   return [target, orgHtml] as const;
 };

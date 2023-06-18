@@ -8,12 +8,7 @@ import {
   Transition,
   createEmotionCache,
 } from "@mantine/core";
-import {
-  useColorScheme,
-  useLocalStorage,
-  useToggle,
-  useViewportSize,
-} from "@mantine/hooks";
+import { useToggle, useViewportSize } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import json from "../package.json";
@@ -22,8 +17,9 @@ import { ConversationMenu } from "./comp/ConversationMenu";
 import { InputWatcher } from "./comp/InputWatcher";
 import { JSONFormatter } from "./comp/JSONFormatter";
 import { SelectionWatcher } from "./comp/SelectionWatcher";
+import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
 import { useElements } from "./lib/hooks/useElements";
-import { useRenderTarget } from "./lib/hooks/useTarget";
+import { useRootTarget } from "./lib/hooks/useTarget";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -31,11 +27,8 @@ const cache = createEmotionCache({
 });
 
 export const App = () => {
-  const [theme, setTheme] = useLocalStorage<"light" | "dark">({ key: "theme" });
-  const systemScheme = useColorScheme();
-  const colorScheme =
-    !theme || (theme as string) === "system" ? systemScheme : theme;
-  const [target, orgHtml] = useRenderTarget("form + div");
+  const [colorScheme, setTheme] = useCgptColorScheme();
+  const [target, orgHtml] = useRootTarget("form + div");
   const [mounted, setMounted] = useState(false);
   const [visible, toggle] = useToggle([true, false]);
   const isWide = useViewportSize().width > 500;
