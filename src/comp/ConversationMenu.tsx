@@ -1,6 +1,8 @@
+import { useSelector } from "@/lib/hooks/useTarget";
 import { ClassNames } from "@emotion/react";
 import { Menu, Portal } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
   IconCaretUp,
   IconCopy,
@@ -8,10 +10,12 @@ import {
   IconMessage,
   IconShare2,
   IconTrash,
+  IconX,
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const regDel = /^Delete ".+"\?$/;
+const regNew = /^New chat$/;
 export const ConversationMenu = () => {
   const [target, setTarget] = useState<HTMLAnchorElement | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -19,8 +23,11 @@ export const ConversationMenu = () => {
     setTarget(el);
     setPos({ x, y });
   });
+  const elNew = useSelector<HTMLElement>("nav a.flex-grow", regNew);
+
   const ref = useClickOutside(() => setTarget(null));
   const isDeleting = regDel.test(target?.textContent || "");
+  const isOpened = !!(target && target.classList.contains("bg-gray-800"));
 
   const handlers = useMemo(
     () =>
@@ -28,11 +35,18 @@ export const ConversationMenu = () => {
         ? {
             wait: async () => {
               let els: NodeListOf<HTMLButtonElement>;
+              let t = Date.now();
               do {
                 // wait for buttons to appear
-                els = target.querySelectorAll("button");
-                if (!els.length) await new Promise((r) => setTimeout(r, 100));
-              } while (!els.length);
+                await new Promise((r) => setTimeout(r, 10));
+                els = document.querySelectorAll(
+                  "nav .overflow-y-auto li button"
+                );
+              } while (
+                !els.length &&
+                !!target.parentElement &&
+                t + 1000 > Date.now()
+              );
 
               return els;
             },
@@ -44,22 +58,22 @@ export const ConversationMenu = () => {
                 if (el.textContent === "Open sidebar") el.click();
               });
             },
-
             click: () => target.click(),
             edit: async () => {
               target.click();
               const els = await handlers.wait?.();
+              console.log(els);
               if (!els) return;
               const edit = els[0];
               edit.click();
-              handlers.openMenu?.();
             },
             share: async () => {
               target.click();
               const els = await handlers.wait?.();
               if (!els) return;
-              if (els.length < 3) return; // no share button
               const share = els[1];
+              const hasPopup = share.getAttribute("aria-haspopup");
+              if (!hasPopup) return;
               share.click();
             },
             copyUrl: async () => {
@@ -68,6 +82,12 @@ export const ConversationMenu = () => {
               if (!els) return;
               const url = location.href;
               navigator.clipboard.writeText(url);
+              notifications.show({
+                icon: <IconCopy />,
+                color: "blue",
+                title: "Copied URL",
+                message: url,
+              });
             },
             pullToTop: async () => {
               target.click();
@@ -76,9 +96,8 @@ export const ConversationMenu = () => {
               const edit = els[0];
               const parent = target.parentElement;
               edit.click();
-              await new Promise((r) => setTimeout(r, 100));
+              await new Promise((r) => setTimeout(r, 10));
               const el = parent?.querySelector("input");
-              console.log({ el, parent });
               if (!el) return;
               if (el.value.endsWith(" ")) el.value = el.value.slice(0, -1);
               else el.value = el.value + " ";
@@ -90,11 +109,24 @@ export const ConversationMenu = () => {
             },
             delete: async () => {
               target.click();
+              const title = target.textContent;
               const els = await handlers.wait?.();
               if (!els) return;
               const del = els[els.length - 1];
               del.click();
-              handlers.openMenu?.();
+              const els2 = await handlers.wait?.();
+              if (!els2) return;
+              const confirm = els2[0];
+              confirm.click();
+              notifications.show({
+                icon: <IconTrash />,
+                color: "red",
+                title: "Deleted",
+                message: title,
+              });
+            },
+            close: async () => {
+              elNew?.click();
             },
           }
         : {},
@@ -170,7 +202,16 @@ export const ConversationMenu = () => {
               <Menu.Dropdown>
                 <Menu.Label>{target.textContent}</Menu.Label>
                 <Menu.Divider />
-                {!target.classList.contains("bg-gray-800") && (
+
+                {isOpened ? (
+                  <Menu.Item
+                    icon={<IconX />}
+                    onClick={handlers.close}
+                    color="indigo"
+                  >
+                    Close
+                  </Menu.Item>
+                ) : (
                   <Menu.Item
                     icon={<IconMessage />}
                     onClick={handlers.click}
@@ -179,7 +220,7 @@ export const ConversationMenu = () => {
                     Open
                   </Menu.Item>
                 )}
-                {!target.classList.contains("bg-gray-800") && <Menu.Divider />}
+                <Menu.Divider />
                 <Menu.Item icon={<IconEdit />} onClick={handlers.edit}>
                   Edit
                 </Menu.Item>

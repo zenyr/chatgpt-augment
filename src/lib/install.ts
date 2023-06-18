@@ -1,20 +1,19 @@
-import React from "react";
-import { MiniApp } from "@/App";
+import { App } from "@/App";
 import debounce from "lodash/debounce";
+import React from "react";
 import { Root, createRoot } from "react-dom/client";
 
 let root: Root;
+const anchor = document.createElement("div");
+anchor.id = "cgpt-agmt-root";
+document.body.appendChild(anchor);
 
 export const installApp = debounce(async () => {
-  let srcDiv;
-  do {
-    srcDiv = document.querySelector("form + div");
-    await new Promise((r) => setTimeout(r, 100));
-  } while (!srcDiv);
-  const html = srcDiv.innerHTML || "ChatGPT";
   uninstallApp();
-  root = createRoot(srcDiv);
-  root.render(React.createElement(MiniApp, { html }));
+  root = createRoot(anchor);
+  root.render(React.createElement(App));
+
+  if (import.meta.hot) import.meta.hot.dispose(() => uninstallApp());
 }, 100);
 
 const uninstallApp = () => {

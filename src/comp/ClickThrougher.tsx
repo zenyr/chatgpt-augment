@@ -1,22 +1,27 @@
-import { useElements } from "@/lib/hooks/useElements";
 import { ClassNames } from "@emotion/react";
 import { useLayoutEffect } from "react";
 
-const ClickThroughWorker = ({ className }: { className: string }) => {
-  const { parent } = useElements();
+const ClickThroughWorker = ({
+  parent,
+  className,
+}: {
+  parent: HTMLDivElement;
+  className: string;
+}) => {
   useLayoutEffect(() => {
     if (parent.classList.contains(className)) return;
     parent.classList.add(className);
     return () => parent.classList.remove(className);
-  }, [className]);
+  }, [className, parent]);
   return null;
 };
 
-export const ClickThrougher = () => {
+export const ClickThrougher = ({ parent }: { parent: HTMLDivElement }) => {
   return (
     <ClassNames>
       {({ css }) => (
         <ClickThroughWorker
+          parent={parent}
           className={css`
             &,
             div {

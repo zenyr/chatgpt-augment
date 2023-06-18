@@ -3,6 +3,7 @@ import {
   ColorSchemeProvider,
   Group,
   MantineProvider,
+  Portal,
   Text,
   Transition,
   createEmotionCache,
@@ -22,24 +23,28 @@ import { InputWatcher } from "./comp/InputWatcher";
 import { JSONFormatter } from "./comp/JSONFormatter";
 import { SelectionWatcher } from "./comp/SelectionWatcher";
 import { useElements } from "./lib/hooks/useElements";
+import { useRenderTarget } from "./lib/hooks/useTarget";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
   insertionPoint: document.body,
 });
-type Props = { html: string };
-export const MiniApp = ({ html }: Props) => {
-  const [visible, toggle] = useToggle([true, false]);
+
+export const App = () => {
   const [theme, setTheme] = useLocalStorage<"light" | "dark">({ key: "theme" });
   const systemScheme = useColorScheme();
   const colorScheme =
     !theme || (theme as string) === "system" ? systemScheme : theme;
+  const [target, orgHtml] = useRenderTarget("form + div");
   const [mounted, setMounted] = useState(false);
+  const [visible, toggle] = useToggle([true, false]);
   const isWide = useViewportSize().width > 500;
-  const { textarea } = useElements();
+  const { textarea, parent } = useElements();
   useEffect(() => {
-    setTimeout(() => setMounted(true), 5);
-  }, []);
+    if (!target) setMounted(false);
+    setTimeout(() => setMounted(true), 100);
+  }, [target]);
+
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
@@ -48,58 +53,62 @@ export const MiniApp = ({ html }: Props) => {
       }
     >
       <MantineProvider emotionCache={cache} theme={{ colorScheme }}>
-        <Transition
-          mounted={mounted}
-          transition="pop"
-          duration={2000}
-          timingFunction="ease"
-        >
-          {(styles) => (
-            <Group
-              style={styles}
-              spacing="xs"
-              align="center"
-              position="center"
-              className="cgpt-agmt"
-              noWrap
+        {target && (
+          <Portal target={target}>
+            <Transition
+              mounted={mounted}
+              transition="pop"
+              duration={2000}
+              timingFunction="ease"
             >
-              <Text
-                variant="gradient"
-                style={{
-                  lineHeight: "initial",
-                  display: visible ? "block" : "none",
-                }}
-                onClick={() => toggle()}
-                id="chatgpt-augment-app"
-              >
-                {isWide && `ChatGPT Augment `}v{json.version}
-              </Text>
-              <Text
-                style={{
-                  lineHeight: "initial",
-                  display: !visible ? "block" : "none",
-                }}
-                onClick={() => toggle()}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-              <Group
-                style={{ display: visible ? "flex" : "none" }}
-                noWrap
-                spacing="xs"
-                align="center"
-                position="center"
-              >
-                <ClickThrougher />
-                <MutationWatcher />
-                <InputWatcher textarea={textarea} />
-                <SelectionWatcher textarea={textarea} />
-                <JSONFormatter />
-                <ConversationMenu />
-                <Notifications position="top-right" />
-              </Group>
-            </Group>
-          )}
-        </Transition>
+              {(styles) => (
+                <Group
+                  style={styles}
+                  spacing="xs"
+                  align="center"
+                  position="center"
+                  className="cgpt-agmt"
+                  noWrap
+                >
+                  <Text
+                    variant="gradient"
+                    style={{
+                      lineHeight: "initial",
+                      display: visible ? "block" : "none",
+                    }}
+                    onClick={() => toggle()}
+                    id="chatgpt-augment-app"
+                  >
+                    {isWide && `ChatGPT Augment `}v{json.version}
+                  </Text>
+                  <Text
+                    style={{
+                      lineHeight: "initial",
+                      display: !visible ? "block" : "none",
+                    }}
+                    onClick={() => toggle()}
+                    dangerouslySetInnerHTML={{ __html: orgHtml }}
+                  />
+                  <Group
+                    style={{ display: visible ? "flex" : "none" }}
+                    noWrap
+                    spacing="xs"
+                    align="center"
+                    position="center"
+                  >
+                    <MutationWatcher />
+                    {textarea && <InputWatcher textarea={textarea} />}
+                    {textarea && <SelectionWatcher textarea={textarea} />}
+                    <JSONFormatter />
+                  </Group>
+                </Group>
+              )}
+            </Transition>
+          </Portal>
+        )}
+        {mounted && parent && <ClickThrougher parent={parent} />}
+        <ConversationMenu />
+        <Notifications position="top-right" />
       </MantineProvider>
     </ColorSchemeProvider>
   );

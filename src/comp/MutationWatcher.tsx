@@ -1,14 +1,7 @@
-import { installApp } from "@/lib/install";
-import throttle from "lodash/throttle";
+import { useJustMounted } from "@/lib/hooks/useJustMounted";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContinueClicker } from "./ContinueClicker";
 import { EditWatcher } from "./EditWatcher";
-import { useJustMounted } from "@/lib/hooks/useJustMounted";
-
-const healthcheck = throttle(() => {
-  const app = document.getElementById("chatgpt-augment-app");
-  if (!app) installApp();
-}, 100);
 
 export const MutationWatcher = () => {
   const continueRef = useRef<HTMLElement | null>(null);
@@ -47,7 +40,6 @@ export const MutationWatcher = () => {
       const addedNodes = Array.from(mutation.addedNodes);
       addedNodes.forEach(scanAddedNode);
     });
-    healthcheck();
   }, []);
   useEffect(() => {
     // install / uninstall observer
