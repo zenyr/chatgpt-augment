@@ -20,6 +20,7 @@ import { SelectionWatcher } from "./comp/workers/SelectionWatcher";
 import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
 import { useElements } from "./lib/hooks/useElements";
 import { useRootTarget } from "./lib/hooks/useTarget";
+import { MessageSerializer } from "./comp/workers/MessageSerializer";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -93,6 +94,7 @@ export const App = () => {
                     {textarea && <InputWatcher textarea={textarea} />}
                     {textarea && <SelectionWatcher textarea={textarea} />}
                     <JSONFormatter />
+                    <MessageSerializer />
                   </Group>
                 </Group>
               )}

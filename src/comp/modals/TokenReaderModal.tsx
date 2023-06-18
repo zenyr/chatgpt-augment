@@ -12,7 +12,6 @@ import {
   Stack,
   Switch,
   Text,
-  Title,
   Tooltip,
   useMantineColorScheme,
   useMantineTheme,
@@ -41,7 +40,9 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
         <Modal
           title={
             <>
-              <Text size="xl" fw={500}>Token Reader</Text>
+              <Text size="xl" fw={500}>
+                Token Reader
+              </Text>
               <Text component="span">
                 ({tokens.length.toLocaleString()} token
                 {tokens.length > 1 && "s"})

@@ -10,7 +10,6 @@ import {
   Stack,
   Text,
   Textarea,
-  Title,
 } from "@mantine/core";
 import {
   IconEditCircle,
@@ -38,7 +37,9 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
     <div ref={ref} {...others}>
       <Group noWrap align="center" position="apart">
         <Text weight="700">{value}</Text>
-        <Text color="dimmed">{prompt}</Text>
+        <Text color="dimmed" size="xs">
+          {prompt}
+        </Text>
       </Group>
     </div>
   )
@@ -104,7 +105,11 @@ export const MacroAddModal = ({
     <ClassNames>
       {({ css }) => (
         <Modal
-          title={<Text size="xl" fw={500}>Add a macro</Text>}
+          title={
+            <Text size="xl" fw={500}>
+              Add a macro
+            </Text>
+          }
           size="auto"
           opened={opened}
           onClose={onCancel}
@@ -216,9 +221,10 @@ export const MacroAddModal = ({
                 </Button>
                 <Button
                   radius="xs"
-                  color="red"
-                  variant="outline"
+                  color="orange"
+                  variant="subtle"
                   onClick={handleClear}
+                  disabled={!prompt && !trueShortcut}
                   leftIcon={<IconEraser />}
                 >
                   Clear
