@@ -12,11 +12,12 @@ import {
   Stack,
   Switch,
   Text,
+  Title,
   Tooltip,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { IconScissors } from "@tabler/icons-react";
+import { IconScissors, IconX } from "@tabler/icons-react";
 import { Fragment, useMemo, useState } from "react";
 
 const checkBr = (char: string | number) =>
@@ -38,9 +39,15 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
     <ClassNames>
       {({ css }) => (
         <Modal
-          title={`Token reader (${tokens.length.toLocaleString()} token${
-            tokens.length > 1 && "s"
-          })`}
+          title={
+            <>
+              <Text size="xl" fw={500}>Token Reader</Text>
+              <Text component="span">
+                ({tokens.length.toLocaleString()} token
+                {tokens.length > 1 && "s"})
+              </Text>
+            </>
+          }
           opened={opened}
           onClose={onCancel}
           centered
@@ -59,7 +66,7 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                 border-radius: ${theme.radius.sm};
                 font-family: ${inverse ? "monospace" : "inherit"};
                 white-space: pre-wrap;
-                
+
                 &:nth-of-type(3n) {
                   background: ${theme.fn.rgba(theme.colors.blue[4], opacity)};
                 }
@@ -139,7 +146,6 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                       ).toLocaleString()} / Text: "${char}" (${char
                         .charCodeAt(0)
                         .toLocaleString()}) / Token: ${token.toLocaleString()}`}
-                      withinPortal
                     >
                       <ruby style={checkBr(char)}>
                         {inverse ? token : char}
@@ -174,7 +180,12 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
             </Text>
 
             <Group noWrap spacing="xs">
-              <Button variant="outline" color="gray" onClick={onCancel}>
+              <Button
+                variant="outline"
+                color="gray"
+                onClick={onCancel}
+                leftIcon={<IconX />}
+              >
                 Close
               </Button>
             </Group>

@@ -12,8 +12,6 @@ export const installApp = debounce(async () => {
   uninstallApp();
   root = createRoot(anchor);
   root.render(React.createElement(App));
-
-  if (import.meta.hot) import.meta.hot.dispose(() => uninstallApp());
 }, 100);
 
 const uninstallApp = () => {
@@ -21,3 +19,5 @@ const uninstallApp = () => {
     root.unmount();
   }
 };
+
+if (import.meta.hot) import.meta.hot.dispose(() => uninstallApp());

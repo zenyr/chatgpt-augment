@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { TokenReaderModal } from "./modals/TokenReaderModal";
+import { TokenReaderModal } from "../modals/TokenReaderModal";
 
 type Props = { textarea: HTMLTextAreaElement | null };
 export const InputWatcher = ({ textarea }: Props) => {
@@ -72,15 +72,17 @@ export const InputWatcher = ({ textarea }: Props) => {
   return (
     <>
       <Badge
-        color={tokens.length > 3000 ? "red" : "gray"}
+        color={tokens.length > 3000 ? "red" : "dark"}
         size="xs"
+        style={{ overflow: "visible", padding: "11px 0", border: 0 }}
         leftSection={
           <ActionIcon
             size="sm"
             radius="xl"
-            variant="transparent"
+            variant="subtle"
             onClick={handleBadgeClick}
             title="Restore last text"
+            color="gray"
           >
             <IconCircleArrowUp size={12} />
           </ActionIcon>
@@ -89,10 +91,11 @@ export const InputWatcher = ({ textarea }: Props) => {
           <ActionIcon
             size="sm"
             radius="xl"
-            variant="transparent"
+            variant="subtle"
             disabled={!tokens.length}
             onClick={() => setOpenTokens(true)}
             title="Token visualizer"
+            color="gray"
           >
             <IconCoin size={12} />
           </ActionIcon>

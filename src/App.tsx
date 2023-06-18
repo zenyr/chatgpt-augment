@@ -1,4 +1,4 @@
-import { MutationWatcher } from "@/comp/MutationWatcher";
+import { MutationWatcher } from "@/comp/workers/MutationWatcher";
 import {
   ColorSchemeProvider,
   Group,
@@ -12,11 +12,11 @@ import { useToggle, useViewportSize } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import json from "../package.json";
-import { ClickThrougher } from "./comp/ClickThrougher";
-import { ConversationMenu } from "./comp/ConversationMenu";
-import { InputWatcher } from "./comp/InputWatcher";
-import { JSONFormatter } from "./comp/JSONFormatter";
-import { SelectionWatcher } from "./comp/SelectionWatcher";
+import { JSONFormatter } from "./comp/modals/JSONFormatter";
+import { ClickThrougher } from "./comp/workers/ClickThrougher";
+import { ConversationMenu } from "./comp/workers/ConversationMenu";
+import { InputWatcher } from "./comp/workers/InputWatcher";
+import { SelectionWatcher } from "./comp/workers/SelectionWatcher";
 import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
 import { useElements } from "./lib/hooks/useElements";
 import { useRootTarget } from "./lib/hooks/useTarget";

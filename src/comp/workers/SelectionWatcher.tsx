@@ -12,12 +12,11 @@ import {
   IconCodeOff,
   IconCodePlus,
   IconEraser,
-  IconPlus,
   IconRotate2,
   IconTrash,
 } from "@tabler/icons-react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { MacroAddModal } from "./modals/MacroAddModal";
+import { MacroAddModal } from "../modals/MacroAddModal";
 
 const getLastWordAndSelect = (el: HTMLTextAreaElement) => {
   const { value, selectionStart } = el;
@@ -208,7 +207,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
             onClick={open}
             radius="xl"
           >
-            <IconPlus size={12} />
+            <IconCodePlus size={12} />
           </ActionIcon>
         </Tooltip>
       )}
