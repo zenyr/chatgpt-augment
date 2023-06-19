@@ -50,6 +50,14 @@ export const InputWatcher = ({ textarea }: Props) => {
     },
     [savedText, textarea]
   );
+  const handleTextOptimized = useCallback((text: string) => {
+    setText(text);
+    const el = textarea;
+    if (!el) return;
+    if (el.value === text) return;
+    el.value = text;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  }, []);
 
   useLayoutEffect(() => {
     // listen for input
@@ -106,6 +114,7 @@ export const InputWatcher = ({ textarea }: Props) => {
       <TokenReaderModal
         tokens={tokens}
         opened={openTokens}
+        onPromptChange={handleTextOptimized}
         onCancel={() => setOpenTokens(false)}
       />
     </>

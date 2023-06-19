@@ -16,14 +16,44 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { IconScissors, IconX } from "@tabler/icons-react";
-import { Fragment, useMemo, useState } from "react";
+import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import {
+  IconCoinOff,
+  IconCoins,
+  IconPigMoney,
+  IconScissors,
+  IconX,
+} from "@tabler/icons-react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 const checkBr = (char: string | number) =>
-  char === "\n" ? { display: "flex", flex: 1 } : {};
+  char === "\n" || char === "\n\n"
+    ? {
+        display: "flex",
+        flex: 1,
+        minHeight: char === "\n\n" ? "1.5rem" : "initial",
+      }
+    : {};
 
-type Props = { tokens: number[]; opened: boolean; onCancel(): void };
-export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
+enum Tokens {
+  LINE_BREAK = 198,
+  DBL_LINE_BREAK = 628,
+  SPACING = 220,
+}
+
+type Props = {
+  tokens: number[];
+  opened: boolean;
+  onCancel(): void;
+  onPromptChange(text: string): void;
+};
+export const TokenReaderModal = ({
+  tokens,
+  opened,
+  onCancel,
+  onPromptChange,
+}: Props) => {
   const parsed = useMemo(
     () => (opened ? tokens.map((t) => [decode([t]), t] as const) : []),
     [tokens, opened]
@@ -32,7 +62,67 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
   const [inverse, setInverse] = useState(false);
   const [slice1000, setSlice1000] = useState(false);
   const [slice100, setSlice100] = useState(true);
+  const [removeHeading, toggle] = useToggle([false, true]);
   const opacity = (inverse ? 0.2 : 0.1) + (colorScheme === "light" ? 0.2 : 0);
+
+  const handleOptimizeToken = useCallback(() => {
+    const newTokens = [...tokens];
+    let spacingScan = 0;
+    let wasLinebreak = false;
+    for (let i = 0; i < newTokens.length; i++) {
+      const prevToken = i === 0 ? null : newTokens[i - 1];
+      const currentToken = newTokens[i];
+      const isLineBreak =
+        currentToken === Tokens.LINE_BREAK ||
+        currentToken === Tokens.DBL_LINE_BREAK;
+      if (isLineBreak && prevToken === currentToken) {
+        // double line break
+        newTokens.splice(i, 1);
+        i--;
+      }
+      if (currentToken === Tokens.SPACING) {
+        spacingScan++;
+        wasLinebreak =
+          wasLinebreak ||
+          prevToken === Tokens.LINE_BREAK ||
+          prevToken === Tokens.DBL_LINE_BREAK;
+      } else {
+        if (spacingScan > 0) {
+          // stepped on consecutive spacings
+          if (isLineBreak) {
+            // trailing space found
+            newTokens.splice(i - spacingScan, spacingScan);
+            i -= spacingScan;
+          } else if (wasLinebreak && removeHeading) {
+            // heading space found
+            newTokens.splice(i - spacingScan, spacingScan);
+            i -= spacingScan;
+          }
+        }
+        spacingScan = 0;
+        wasLinebreak = false;
+      }
+    }
+    if (tokens.length !== newTokens.length) {
+      const diff = tokens.length - newTokens.length;
+      notifications.show({
+        icon: <IconPigMoney />,
+        color: "lime",
+        title: "Optimized tokens",
+        message: `Reduced ${diff} token${diff > 1 ? "s" : ""}!`,
+      });
+      const newPrompt = decode(newTokens);
+      onPromptChange(newPrompt);
+    } else {
+      notifications.show({
+        icon: <IconPigMoney />,
+        color: "green",
+        title: "Optimized tokens",
+        message: `But there's nothing to optimize.`,
+      });
+    }
+  }, [tokens, onPromptChange, removeHeading]);
+
   const theme = useMantineTheme();
   return (
     <ClassNames>
@@ -142,11 +232,14 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
                       />
                     ) : null}
                     <Tooltip
-                      label={`Index: ${(
-                        i + 1
-                      ).toLocaleString()} / Text: "${char}" (${char
-                        .charCodeAt(0)
-                        .toLocaleString()}) / Token: ${token.toLocaleString()}`}
+                      label={
+                        <Text size="xs" style={{ whiteSpace: "pre" }}>
+                          Index: {(i + 1).toLocaleString()} / Text: "{char}" (
+                          {char.charCodeAt(0).toLocaleString()}
+                          {char.length > 1 ? `,...+${char.length - 1}` : ""}) /
+                          Token: {token.toLocaleString()}
+                        </Text>
+                      }
                     >
                       <ruby style={checkBr(char)}>
                         {inverse ? token : char}
@@ -180,7 +273,7 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
               </Anchor>
             </Text>
 
-            <Group noWrap spacing="xs">
+            <Group noWrap spacing="xs" align="center">
               <Button
                 variant="outline"
                 color="gray"
@@ -189,6 +282,51 @@ export const TokenReaderModal = ({ tokens, opened, onCancel }: Props) => {
               >
                 Close
               </Button>
+              <Tooltip
+                label={
+                  <Text size="xs" align="center">
+                    Save tokens by trimming off trailing spaces and
+                    <br />
+                    merging CRLF tokens with the least change of layout
+                  </Text>
+                }
+                withArrow
+                position="bottom"
+                withinPortal
+              >
+                <Button
+                  variant="outline"
+                  color="lime"
+                  onClick={handleOptimizeToken}
+                  leftIcon={<IconPigMoney stroke={1.5} />}
+                >
+                  Optimize
+                </Button>
+              </Tooltip>
+              <Tooltip
+                label={
+                  <Text size="xs" align="center">
+                    May shift layout & may leave a leading space
+                    <br />
+                    but still saves more tokens
+                  </Text>
+                }
+                withArrow
+                position="bottom"
+                withinPortal
+              >
+                <span>
+                  <Switch
+                    checked={removeHeading}
+                    onChange={() => toggle()}
+                    onLabel={<IconCoinOff size={12} />}
+                    offLabel={<IconCoins size={12} />}
+                    label="Trim Leading space tokens"
+                    description="Great for text, bad for codes"
+                    styles={{ body: { alignItems: "center" } }}
+                  />
+                </span>
+              </Tooltip>
             </Group>
           </Stack>
         </Modal>
