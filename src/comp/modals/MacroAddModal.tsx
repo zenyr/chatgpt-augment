@@ -87,13 +87,16 @@ export const MacroAddModal = ({
     (e: MouseEvent) => (e.preventDefault(), setPrompt(""), setShortcut("")),
     []
   );
-  const handleShortcutPick = useCallback((item: AutocompleteItem) => {
-    const shortcut = item.value;
-    const matching = macros[shortcut];
-    if (matching) {
-      setPrompt(matching);
-    }
-  }, []);
+  const handleShortcutPick = useCallback(
+    (item: AutocompleteItem) => {
+      const shortcut = item.value;
+      const matching = macros[shortcut];
+      if (matching) {
+        setPrompt(matching);
+      }
+    },
+    [macros]
+  );
   const exists = opened && macros[trueShortcut];
   const data = Object.entries(macros).map(([key, value]) => ({
     prompt: `${value.slice(0, CUTOFF)}${value.length > CUTOFF ? "..." : ""}`,

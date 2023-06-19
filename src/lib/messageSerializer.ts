@@ -8,7 +8,10 @@ const nhm = new NodeHtmlMarkdown(
   {
     div: {
       postprocess({ node }) {
-        if (node.classList.contains("items-center"))
+        if (
+          node.classList.contains("items-center") || // title of a codebloxk
+          node.classList.contains("border") // moderation message
+        )
           return PostProcessResult.RemoveNode;
         return PostProcessResult.NoChange;
       },

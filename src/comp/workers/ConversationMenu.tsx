@@ -74,8 +74,7 @@ export const ConversationMenu = () => {
 
               target.click();
               const els = await handlers.wait?.(parent, "button", 3);
-              console.log(els);
-              if (!els) return;
+              if (!els?.length) return handlers.bail?.();
               const edit = els[0];
               edit.click();
             },
