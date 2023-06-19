@@ -1,6 +1,6 @@
 import { useSelector } from "@/lib/hooks/useTarget";
 import { ClassNames } from "@emotion/react";
-import { MantineProvider, Menu, Portal } from "@mantine/core";
+import { MantineProvider, Menu, Portal, Text } from "@mantine/core";
 import { useClickOutside } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -33,22 +33,32 @@ export const ConversationMenu = () => {
     () =>
       target
         ? {
-            wait: async () => {
+            wait: async (
+              parent: HTMLElement | Document,
+              selector: string,
+              length: number = 3
+            ) => {
               let els: NodeListOf<HTMLButtonElement>;
               let t = Date.now();
               do {
                 // wait for buttons to appear
                 await new Promise((r) => setTimeout(r, 10));
-                els = document.querySelectorAll(
-                  "nav .overflow-y-auto li button"
-                );
+                els = parent.querySelectorAll(selector);
               } while (
-                !els.length &&
-                !!target.parentElement &&
-                t + 1000 > Date.now()
+                els.length !== length &&
+                !!(parent === document || parent.parentElement) &&
+                t + 2000 > Date.now()
               );
-
               return els;
+            },
+            bail: () => {
+              notifications.update({
+                id: "ctx",
+                icon: <IconX />,
+                color: "orange",
+                title: "Failed due to a list change",
+                message: "Please try again.",
+              });
             },
             openMenu: () => {
               const srItem = document.querySelectorAll(
@@ -60,26 +70,34 @@ export const ConversationMenu = () => {
             },
             click: () => target.click(),
             edit: async () => {
+              const parent = target.parentElement!;
+
               target.click();
-              const els = await handlers.wait?.();
+              const els = await handlers.wait?.(parent, "button", 3);
               console.log(els);
               if (!els) return;
               const edit = els[0];
               edit.click();
             },
             share: async () => {
+              const parent = target.parentElement!;
               target.click();
-              const els = await handlers.wait?.();
-              if (!els) return;
+              const els = await handlers.wait?.(parent, "button", 3);
+              if (!els?.length) return handlers.bail?.();
               const share = els[1];
               const hasPopup = share.getAttribute("aria-haspopup");
               if (!hasPopup) return;
               share.click();
             },
             copyUrl: async () => {
+              notifications.show({
+                id: "ctx",
+                message: "Copying URL...",
+              });
+              const parent = target.parentElement!;
               target.click();
-              const els = await handlers.wait?.();
-              if (!els) return;
+              const els = await handlers.wait?.(parent, "button", 3);
+              if (!els?.length) return handlers.bail?.();
               const url = location.href;
               navigator.clipboard.writeText(url);
               notifications.show({
@@ -90,32 +108,52 @@ export const ConversationMenu = () => {
               });
             },
             pullToTop: async () => {
+              notifications.show({
+                id: "ctx",
+                message: "Pulling item up...",
+              });
+              const parent = target.parentElement!;
               target.click();
-              const els = await handlers.wait?.();
-              if (!els) return;
+              const els = await handlers.wait?.(parent, "button", 3);
+              if (!els?.length) return handlers.bail?.();
               const edit = els[0];
-              const parent = target.parentElement;
               edit.click();
-              await new Promise((r) => setTimeout(r, 10));
-              const el = parent?.querySelector("input");
-              if (!el) return;
+              const elsInput = await handlers.wait?.(parent, "input", 1);
+              const el = elsInput?.[0];
+              if (!el) return handlers.bail?.();
               if (el.value.endsWith(" ")) el.value = el.value.slice(0, -1);
               else el.value = el.value + " ";
               el.dispatchEvent(new Event("input", { bubbles: true }));
-              const btn = parent?.querySelector(
-                "button"
-              ) as HTMLButtonElement | null;
+              const elsBtn = await handlers.wait?.(parent, "button", 2);
+              if (!elsBtn?.length) return handlers.bail?.();
+              const btn = elsBtn?.[0];
               btn?.click();
+              notifications.show({
+                icon: <IconCaretUp />,
+                color: "blue",
+                title: "Pulled to top",
+                message: (
+                  <Text>
+                    <Text fw={700}>{target.textContent}</Text>will be at the top
+                    of the list soon or another.
+                  </Text>
+                ),
+              });
             },
             delete: async () => {
-              target.click();
+              notifications.show({
+                id: "ctx",
+                message: "Deleting an item...",
+              });
+              const parent = target.parentElement!;
               const title = target.textContent;
-              const els = await handlers.wait?.();
-              if (!els) return;
+              target.click();
+              const els = await handlers.wait?.(parent, "button", 3);
+              if (!els?.length) return handlers.bail?.();
               const del = els[els.length - 1];
               del.click();
-              const els2 = await handlers.wait?.();
-              if (!els2) return;
+              const els2 = await handlers.wait?.(parent, "button", 2);
+              if (!els2?.length) return handlers.bail?.();
               const confirm = els2[0];
               confirm.click();
               notifications.show({
@@ -206,7 +244,7 @@ export const ConversationMenu = () => {
 
                   {isOpened ? (
                     <Menu.Item
-                      icon={<IconX />}
+                      icon={<IconX size={12} />}
                       onClick={handlers.close}
                       color="indigo"
                     >
@@ -214,7 +252,7 @@ export const ConversationMenu = () => {
                     </Menu.Item>
                   ) : (
                     <Menu.Item
-                      icon={<IconMessage />}
+                      icon={<IconMessage size={12} />}
                       onClick={handlers.click}
                       color="indigo"
                     >
@@ -222,24 +260,33 @@ export const ConversationMenu = () => {
                     </Menu.Item>
                   )}
                   <Menu.Divider />
-                  <Menu.Item icon={<IconEdit />} onClick={handlers.edit}>
+                  <Menu.Item
+                    icon={<IconEdit size={12} />}
+                    onClick={handlers.edit}
+                  >
                     Edit
                   </Menu.Item>
-                  <Menu.Item icon={<IconShare2 />} onClick={handlers.share}>
+                  <Menu.Item
+                    icon={<IconShare2 size={12} />}
+                    onClick={handlers.share}
+                  >
                     Share...
                   </Menu.Item>
-                  <Menu.Item icon={<IconCopy />} onClick={handlers.copyUrl}>
+                  <Menu.Item
+                    icon={<IconCopy size={12} />}
+                    onClick={handlers.copyUrl}
+                  >
                     Copy URL
                   </Menu.Item>
                   <Menu.Item
-                    icon={<IconCaretUp />}
+                    icon={<IconCaretUp size={12} />}
                     onClick={handlers.pullToTop}
                   >
                     Pull to top
                   </Menu.Item>
                   <Menu.Divider />
                   <Menu.Item
-                    icon={<IconTrash />}
+                    icon={<IconTrash size={12} />}
                     onClick={handlers.delete}
                     color="red"
                   >

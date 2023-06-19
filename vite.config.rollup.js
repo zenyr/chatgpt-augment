@@ -15,6 +15,8 @@ export const chunks = {
   ],
   "vnd.chronoNode": ["chrono-node"],
   "vnd.emojis": ["node-emoji"],
+  "vnd.marked": ["marked"],
+  "vnd.htmlMarkdown": ["node-html-markdown"],
 };
 
 /** @type {import('vite').UserConfig.build.rollupOptions} */

@@ -18,7 +18,7 @@ export const MessageSerializer = () => {
   );
   const data = useMemo(
     () =>
-      groupEls.filter(Boolean).map(serializeMessageElement) as [
+      groupEls.map(serializeMessageElement).filter(Boolean) as [
         boolean,
         string
       ][],
