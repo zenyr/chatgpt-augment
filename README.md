@@ -1,12 +1,17 @@
 # ChatGPT-Augment Chrome Extension
 
-![ChatGPT-Augment Logo](img/logo.png)
+<img src="img/logo.png" align="right" width="128" />
 
 **TL;DR:**
 
 ChatGPT-Augment is a Chrome extension that enhances your ChatGPT experience by adding useful features.
 
-Install the extension by 1. [Download from the Chrome Web Store](https://chrome.google.com/webstore/detail/chatgpt-augment/kgellgcbfceooklmfjcbofaldbacgpbm) or 2. downloading the latest version from the [Releases](https://github.com/zenyr/chatgpt-augment/releases) page and following the installation steps. The extension is built using React, Vite, Mantine, and ChatGPT. Feedback and support can be provided through email or by submitting issues/PRs on GitHub. The project is licensed under the WTFPL License.
+Install the extension by:
+
+1. [Downloading from the Chrome Web Store](https://chrome.google.com/webstore/detail/chatgpt-augment/kgellgcbfceooklmfjcbofaldbacgpbm) or
+2. downloading the latest version from the [Releases](https://github.com/zenyr/chatgpt-augment/releases) page and following the installation steps.
+
+The extension is built using React, Vite, Mantine, and ChatGPT. Feedback and support can be provided through email or by submitting issues/PRs on GitHub. The project is licensed under the WTFPL License.
 
 ---
 
@@ -25,7 +30,7 @@ Yes, you guessed it. This Readme is also written by ChatGPT.
 | ![Text expander](img/expander.gif)     | - Select a shorthand and press `Ctrl/Cmd+E`. <br/> - use `:cursor:` to designate the cursor position. |
 | ![Add a macro modal](img/addmodal.png) | Add/Overwrite/Delete macros here.                                                                     |
 | ![Menu](img/menu.png)                  | Right click on conversations.                                                                         |
-| ![Tokens](img/tokens.png)              | Get precise token counts locally.                                                                     |
+| ![Tokens](img/tokens.png)              | Get precise token counts locally & optimize tokens by merging pointless whitespaces                   |
 
 # Features
 
@@ -92,8 +97,10 @@ ChatGPT-Augment is built using the following technologies:
 - React ⚛
 - Vite
   - ergo, Rollup
+  - @crxjs/vite-plugin
 - Mantine
   - ergo, @tabler/icons-react
+- json5, jszip, lodash, marked
 - ChatGPT :wink: :wink:
 
 ## Feedback and Support
