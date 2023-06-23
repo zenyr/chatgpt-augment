@@ -1,5 +1,4 @@
 import {
-  Box,
   ColorSchemeProvider,
   Group,
   MantineProvider,
@@ -13,15 +12,15 @@ import { Notifications } from "@mantine/notifications";
 import { useEffect, useMemo, useState } from "react";
 import Balancer from "react-wrap-balancer";
 import { version } from "../package.json";
+import { CoderModal2 } from "./comp/modals/CoderModal2";
 import { ClickThrougher } from "./comp/workers/ClickThrougher";
 import { ContinueWorker } from "./comp/workers/ContinueClicker";
 import { ConversationMenu } from "./comp/workers/ConversationMenu";
+import { MessageSerializer } from "./comp/workers/MessageSerializer";
 import { TextAreaAugmenter } from "./comp/workers/TextAreaAugmenter";
 import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
 import { useRootAnchor } from "./lib/hooks/useTarget";
 import { useElsUpdater } from "./lib/hooks/workers/useElements";
-import { MessageSerializer } from "./comp/workers/MessageSerializer";
-import { CoderModal2 } from "./comp/modals/CoderModal2";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -35,21 +34,22 @@ export const App = () => {
   const isWide = useViewportSize().width > 600;
   const [tgt, __html] = useRootAnchor();
 
-  const { width, height } = useElsUpdater(); // updates els on mutation
+  const { width } = useElsUpdater(); // updates els on mutation
   const wrapperStyle = useMemo(
     () =>
       ({
         width,
-        height,
         userSelect: "none",
         backdropFilter: "blur(3px)",
+        position: "relative",
+
         zIndex: 1,
         background:
           colorScheme === "dark"
             ? "rgb(52, 53, 64 , 0.5)"
             : "rgb(255, 255, 255, 0.5)",
       } as const),
-    [colorScheme, width, height]
+    [colorScheme, width]
   );
   useEffect(() => {
     setMounted(false);
@@ -63,7 +63,7 @@ export const App = () => {
       }
     >
       <MantineProvider emotionCache={cache} theme={{ colorScheme }}>
-        <Box style={wrapperStyle}>
+        <Group style={wrapperStyle} align="center" position="center">
           <Transition
             mounted={!!width && mounted}
             transition="pop"
@@ -110,7 +110,7 @@ export const App = () => {
             )}
           </Transition>
           <Notifications position="top-right" />
-        </Box>
+        </Group>
       </MantineProvider>
     </ColorSchemeProvider>
   );
