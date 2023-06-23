@@ -1,60 +1,59 @@
+import { useApplyClassName } from "@/lib/hooks/useApplyClassName";
+import { store } from "@/lib/hooks/workers/useElements";
 import { ClassNames } from "@emotion/react";
-import { useLayoutEffect } from "react";
 
-const ClickThroughWorker = ({
-  parent,
+const Worker = ({
   className,
+  parent,
 }: {
-  parent: HTMLDivElement;
+  parent: HTMLElement;
   className: string;
 }) => {
-  useLayoutEffect(() => {
-    if (parent.classList.contains(className)) return;
-    parent.classList.add(className);
-    return () => parent.classList.remove(className);
-  }, [className, parent]);
+  useApplyClassName(parent, className);
   return null;
 };
-
-export const ClickThrougher = ({ parent }: { parent: HTMLDivElement }) => {
+export const ClickThrougher = () => {
+  const [node] = store((s) => [s.main.form?.parentElement]);
   return (
     <ClassNames>
-      {({ css }) => (
-        <ClickThroughWorker
-          parent={parent}
-          className={css`
-            &,
-            div {
-              pointer-events: none;
-              button,
-              textarea,
-              .rounded-xl {
-                pointer-events: auto;
-              }
-            }
-            form + div {
+      {({ css }) =>
+        node ? (
+          <Worker
+            parent={node}
+            className={css`
               &,
               div {
-                pointer-events: auto;
-                user-select: none;
+                pointer-events: none;
+                button,
+                textarea,
+                .rounded-xl {
+                  pointer-events: auto;
+                }
               }
-              input {
-                user-select: text;
+              form + div {
+                &,
+                div {
+                  pointer-events: auto;
+                  user-select: none;
+                }
+                input {
+                  user-select: text;
+                }
               }
-            }
-            .cgpt-agmt {
-              letter-spacing: -1px;
-              margin-bottom: -0.4rem;
-              input[type="checkbox"] {
-                display: none;
+              .cgpt-agmt {
+                letter-spacing: -1px;
+                margin-bottom: -0.4rem;
+                input[type="checkbox"] {
+                  display: none;
+                }
+                [data-position="top"] {
+                  letter-spacing: initial;
+                }
               }
-              [data-position="top"] {
-                letter-spacing: initial;
-              }
-            }
-          `}
-        />
-      )}
+            `}
+          />
+        ) : null
+      }
     </ClassNames>
   );
 };

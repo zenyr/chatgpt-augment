@@ -72,7 +72,9 @@ export const deserializeMessage = (text: string) => {
 };
 
 export const serializeMessageElement = (el: HTMLElement) => {
-  const assistantEl = el.querySelector(".markdown");
+  const assistantEl = el.classList.contains("markdown")
+    ? el
+    : el.querySelector(".markdown");
   const isUser = !assistantEl;
   if (assistantEl) {
     const parsed = nhm.translate((assistantEl as HTMLElement).innerHTML);
@@ -81,9 +83,9 @@ export const serializeMessageElement = (el: HTMLElement) => {
   const userEl = el.querySelector(".whitespace-pre-wrap, textarea");
   if (userEl) {
     if (userEl.tagName === "TEXTAREA") {
-      return [true, (userEl as HTMLTextAreaElement).value] as const;
+      return [isUser, (userEl as HTMLTextAreaElement).value] as const;
     }
-    return [true, (userEl as HTMLElement).textContent || ""] as const;
+    return [isUser, (userEl as HTMLElement).textContent || ""] as const;
   }
   return null;
 };

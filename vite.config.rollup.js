@@ -17,6 +17,9 @@ export const chunks = {
   "vnd.emojis": ["node-emoji"],
   "vnd.marked": ["marked"],
   "vnd.htmlMarkdown": ["node-html-markdown"],
+  "vnd.zustand": ["zustand"],
+  "vnd.json5": ["json5"],
+  "vnd.jszip": ["jszip"],
 };
 
 /** @type {import('vite').UserConfig.build.rollupOptions} */

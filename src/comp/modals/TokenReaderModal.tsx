@@ -26,6 +26,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Fragment, useCallback, useMemo, useState } from "react";
+import { Balancer } from "react-wrap-balancer";
 
 const checkBr = (char: string | number) =>
   char === "\n" || char === "\n\n"
@@ -284,12 +285,12 @@ export const TokenReaderModal = ({
               </Button>
               <Tooltip
                 label={
-                  <Text size="xs" align="center">
-                    Save tokens by trimming off trailing spaces and
-                    <br />
-                    merging CRLF tokens with the least change of layout
+                  <Text component={Balancer} size="xs" align="center">
+                    Save tokens by trimming off trailing spaces and merging CRLF
+                    tokens with the least change of layout
                   </Text>
                 }
+                style={{ maxWidth: 400 }}
                 withArrow
                 position="bottom"
                 withinPortal
@@ -305,12 +306,12 @@ export const TokenReaderModal = ({
               </Tooltip>
               <Tooltip
                 label={
-                  <Text size="xs" align="center">
-                    May shift layout & may leave a leading space
-                    <br />
-                    but still saves more tokens
+                  <Text component={Balancer} size="xs" align="center">
+                    May shift layout & may leave a leading space but still saves
+                    more tokens
                   </Text>
                 }
+                style={{ maxWidth: 400 }}
                 withArrow
                 position="bottom"
                 withinPortal

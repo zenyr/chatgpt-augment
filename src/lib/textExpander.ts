@@ -68,4 +68,4 @@ const tryMacros = memoize(
 export const getTextExpander: (
   macros: Record<string, string>
 ) => (t: string) => string | Error = (macros) =>
-  compose(tryChrono, tryEmoji, tryStringify, tryURLDecode, tryMacros(macros));
+  compose(tryStringify, tryMacros(macros), tryChrono, tryEmoji, tryURLDecode);

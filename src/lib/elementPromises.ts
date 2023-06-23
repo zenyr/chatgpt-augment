@@ -50,6 +50,7 @@ export async function waitElement<
       } else {
         // found, wait for unmount but now text doesn't match
         if (!testText(tgtEl, textReg)) break;
+        await new Promise((r) => setTimeout(r, 100));
       }
     } else {
       // target status is matched

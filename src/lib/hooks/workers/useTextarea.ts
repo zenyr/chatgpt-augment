@@ -1,11 +1,21 @@
-import { useJson } from "@/lib/hooks/useJson";
-import { getTextExpander } from "@/lib/textExpander";
-import { ActionIcon, Select, Tooltip } from "@mantine/core";
 import {
   getHotkeyHandler,
+  useDebouncedValue,
   useDisclosure,
+  useLocalStorage,
   useTextSelection,
 } from "@mantine/hooks";
+import {
+  MouseEvent,
+  createElement,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { encode } from "../../gpt3TokenizerUnobfuscated";
 import { notifications } from "@mantine/notifications";
 import {
   IconCodeMinus,
@@ -13,10 +23,9 @@ import {
   IconCodePlus,
   IconEraser,
   IconRotate2,
-  IconTrash,
 } from "@tabler/icons-react";
-import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import { MacroAddModal } from "../modals/MacroAddModal";
+import { getTextExpander } from "../../textExpander";
+import { useJson } from "../useJson";
 
 const getLastWordAndSelect = (el: HTMLTextAreaElement) => {
   const { value, selectionStart } = el;
@@ -28,8 +37,73 @@ const getLastWordAndSelect = (el: HTMLTextAreaElement) => {
   return lastWord;
 };
 
-type Props = { textarea: HTMLTextAreaElement; isEdit?: boolean };
-export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
+// communicate with textarea
+export const useTextAreaAugmentaion = (textarea: HTMLTextAreaElement) => {
+  const [savedText, setSavedText] = useLocalStorage({
+    key: "prompt",
+    defaultValue: "",
+  });
+  const [text, setText] = useState(savedText);
+  const [debouncedText] = useDebouncedValue(text, 100);
+  const [openTokens, setOpenTokens] = useState(false);
+
+  // const length = useMemo(() => getTokenLength(debouncedText), [debouncedText]);
+  const tokens = useMemo(() => encode(debouncedText), [debouncedText]);
+
+  useEffect(
+    () => void (debouncedText && setSavedText(debouncedText)),
+    [debouncedText]
+  );
+
+  const handleBadgeClick = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const el = textarea;
+      if (!el) return;
+      if (el.value === savedText) return;
+      notifications.show({
+        icon: createElement(IconRotate2),
+        color: "blue",
+        title: "Restored a recent prompt",
+        message: `Because they want you to forget the past everytime`,
+      });
+      el.value = savedText;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.focus();
+    },
+    [savedText, textarea]
+  );
+  const handleTextOptimized = useCallback(
+    (text: string) => {
+      setText(text);
+      const el = textarea;
+      if (!el) return;
+      if (el.value === text) return;
+      el.value = text;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    },
+    [textarea]
+  );
+
+  useLayoutEffect(() => {
+    // listen for input
+    const el = textarea;
+    if (!el) return;
+    const handler = (e: Event) => {
+      const { value } = e.currentTarget as HTMLTextAreaElement;
+      if (e.type === "focus" && !value) return; // protect against accidental deletion
+      setText(value);
+    };
+    setText(el.value);
+    el.addEventListener("input", handler);
+    el.addEventListener("focus", handler);
+    return () => (
+      el.removeEventListener("input", handler),
+      el.removeEventListener("focus", handler)
+    );
+  }, [textarea]);
+
   const selection = useTextSelection();
   const [openAddmodal, { open, close }] = useDisclosure(false);
   const { json, set, remove } = useJson();
@@ -38,7 +112,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const handleConfirm = useCallback(
     (key: string, value: string) => {
       notifications.show({
-        icon: <IconCodePlus />,
+        icon: createElement(IconCodePlus),
         color: "blue",
         title: "Added a macro",
         message: `Shorthand: ${key}`,
@@ -51,7 +125,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
   const handleDelete = useCallback(
     (key: string) => (
       notifications.show({
-        icon: <IconCodeMinus />,
+        icon: createElement(IconCodeMinus),
         color: "red",
         title: "Deleted a macro",
         message: `${key} is now a goner.`,
@@ -65,14 +139,14 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
     if (!el) return;
     if (!el.value && !!delRef.current) {
       notifications.show({
-        icon: <IconRotate2 />,
+        icon: createElement(IconRotate2),
         title: "Restored text",
         message: `Because everybody deserves a second chance`,
       });
       el.value = delRef.current;
     } else {
       notifications.show({
-        icon: <IconEraser />,
+        icon: createElement(IconEraser),
         color: "red",
         title: "Cleared text",
         message: `Because delete key needs some rest`,
@@ -82,7 +156,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
     }
     el.dispatchEvent(new Event("input", { bubbles: true }));
     setTimeout(() => el.focus(), 0);
-  }, []);
+  }, [textarea]);
 
   const items = useMemo(
     () =>
@@ -113,7 +187,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
       el.dispatchEvent(new Event("input", { bubbles: true }));
       setTimeout(() => el.focus(), 0);
     },
-    [selection]
+    [selection, textarea]
   );
 
   useLayoutEffect(() => {
@@ -130,7 +204,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
           const expanded = textExpander(text);
           if (expanded instanceof Error) {
             notifications.show({
-              icon: <IconCodeOff />,
+              icon: createElement(IconCodeOff),
               color: "black",
               title: "Could not expand text",
               message: expanded.message,
@@ -139,7 +213,7 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
           }
           if (expanded === text) {
             notifications.show({
-              icon: <IconCodeOff />,
+              icon: createElement(IconCodeOff),
               color: "black",
               title: "Could not expand text",
               message: "No expansion found",
@@ -166,51 +240,23 @@ export const SelectionWatcher = ({ textarea, isEdit = false }: Props) => {
     ]);
     el.addEventListener("keydown", handler);
     return () => el.removeEventListener("keydown", handler);
-  }, [selection, textExpander]);
-  return (
-    <>
-      <Tooltip label="Clear text" withArrow>
-        <ActionIcon
-          size="sm"
-          color="gray"
-          variant="filled"
-          onClick={handleClearText}
-          radius="xl"
-        >
-          <IconTrash size={12} />
-        </ActionIcon>
-      </Tooltip>
-      <MacroAddModal
-        macros={json}
-        opened={openAddmodal}
-        onConfirm={handleConfirm}
-        onDelete={handleDelete}
-        onCancel={close}
-        initialPrompt={selection?.toString() || ""}
-      />
-      <Select
-        size="xs"
-        radius="lg"
-        placeholder="Macros"
-        searchable
-        nothingFound="No options"
-        data={items}
-        onChange={handleSelect}
-        style={{ maxWidth: 100 }}
-      />
-      {!isEdit && (
-        <Tooltip label="Add/edit macros" withArrow>
-          <ActionIcon
-            size="sm"
-            color="gray"
-            variant="filled"
-            onClick={open}
-            radius="xl"
-          >
-            <IconCodePlus size={12} />
-          </ActionIcon>
-        </Tooltip>
-      )}
-    </>
-  );
+  }, [selection, textExpander, textarea]);
+
+  return {
+    tokens,
+    handleBadgeClick,
+    openTokens,
+    setOpenTokens,
+    handleTextOptimized,
+    handleClearText,
+    json,
+    openAddmodal,
+    handleConfirm,
+    handleDelete,
+    open,
+    close,
+    selection,
+    items,
+    handleSelect,
+  };
 };

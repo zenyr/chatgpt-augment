@@ -1,26 +1,27 @@
-import { MutationWatcher } from "@/comp/workers/MutationWatcher";
 import {
+  Box,
   ColorSchemeProvider,
   Group,
   MantineProvider,
-  Portal,
   Text,
+  Tooltip,
   Transition,
   createEmotionCache,
 } from "@mantine/core";
-import { useToggle, useViewportSize } from "@mantine/hooks";
+import { useViewportSize } from "@mantine/hooks";
 import { Notifications } from "@mantine/notifications";
-import { useEffect, useState } from "react";
-import json from "../package.json";
-import { JSONFormatter } from "./comp/modals/JSONFormatter";
+import { useEffect, useMemo, useState } from "react";
+import Balancer from "react-wrap-balancer";
+import { version } from "../package.json";
 import { ClickThrougher } from "./comp/workers/ClickThrougher";
+import { ContinueWorker } from "./comp/workers/ContinueClicker";
 import { ConversationMenu } from "./comp/workers/ConversationMenu";
-import { InputWatcher } from "./comp/workers/InputWatcher";
-import { SelectionWatcher } from "./comp/workers/SelectionWatcher";
+import { TextAreaAugmenter } from "./comp/workers/TextAreaAugmenter";
 import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
-import { useElements } from "./lib/hooks/useElements";
-import { useRootTarget } from "./lib/hooks/useTarget";
+import { useRootAnchor } from "./lib/hooks/useTarget";
+import { useElsUpdater } from "./lib/hooks/workers/useElements";
 import { MessageSerializer } from "./comp/workers/MessageSerializer";
+import { CoderModal2 } from "./comp/modals/CoderModal2";
 
 const cache = createEmotionCache({
   key: "cgpt-agmt",
@@ -29,16 +30,31 @@ const cache = createEmotionCache({
 
 export const App = () => {
   const [colorScheme, setTheme] = useCgptColorScheme();
-  const [target, orgHtml] = useRootTarget("form + div");
-  const [mounted, setMounted] = useState(false);
-  const [visible, toggle] = useToggle([true, false]);
-  const isWide = useViewportSize().width > 500;
-  const { textarea, parent } = useElements();
-  useEffect(() => {
-    if (!target) setMounted(false);
-    setTimeout(() => setMounted(true), 100);
-  }, [target]);
 
+  const [mounted, setMounted] = useState(false);
+  const isWide = useViewportSize().width > 600;
+  const [tgt, __html] = useRootAnchor();
+
+  const { width, height } = useElsUpdater(); // updates els on mutation
+  const wrapperStyle = useMemo(
+    () =>
+      ({
+        width,
+        height,
+        userSelect: "none",
+        backdropFilter: "blur(3px)",
+        zIndex: 1,
+        background:
+          colorScheme === "dark"
+            ? "rgb(52, 53, 64 , 0.5)"
+            : "rgb(255, 255, 255, 0.5)",
+      } as const),
+    [colorScheme, width, height]
+  );
+  useEffect(() => {
+    setMounted(false);
+    setTimeout(() => setMounted(true), 100);
+  }, [tgt]);
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
@@ -47,63 +63,54 @@ export const App = () => {
       }
     >
       <MantineProvider emotionCache={cache} theme={{ colorScheme }}>
-        {target && (
-          <Portal target={target}>
-            <Transition
-              mounted={mounted}
-              transition="pop"
-              duration={2000}
-              timingFunction="ease"
-            >
-              {(styles) => (
-                <Group
-                  style={styles}
-                  spacing="xs"
-                  align="center"
-                  position="center"
-                  className="cgpt-agmt"
-                  noWrap
+        <Box style={wrapperStyle}>
+          <Transition
+            mounted={!!width && mounted}
+            transition="pop"
+            duration={500}
+            exitDuration={100}
+            timingFunction="ease"
+            keepMounted
+          >
+            {(styles) => (
+              <Group
+                style={styles}
+                spacing="xs"
+                align="center"
+                position="center"
+                className="cgpt-agmt"
+                noWrap
+              >
+                <Tooltip
+                  label={
+                    <Text
+                      component={Balancer}
+                      size="xs"
+                      dangerouslySetInnerHTML={{ __html }}
+                    />
+                  }
+                  styles={{
+                    tooltip: { maxWidth: "90vw", whiteSpace: "pre-wrap" },
+                  }}
+                  withArrow
+                  withinPortal
                 >
-                  <Text
-                    variant="gradient"
-                    style={{
-                      lineHeight: "initial",
-                      display: visible ? "block" : "none",
-                    }}
-                    onClick={() => toggle()}
-                    id="chatgpt-augment-app"
-                  >
-                    {isWide && `ChatGPT Augment `}v{json.version}
+                  <Text variant="gradient" size="sm">
+                    {isWide && `ChatGPT Augment `}v{version}
                   </Text>
-                  <Text
-                    style={{
-                      lineHeight: "initial",
-                      display: !visible ? "block" : "none",
-                    }}
-                    onClick={() => toggle()}
-                    dangerouslySetInnerHTML={{ __html: orgHtml }}
-                  />
-                  <Group
-                    style={{ display: visible ? "flex" : "none" }}
-                    noWrap
-                    spacing="xs"
-                    align="center"
-                    position="center"
-                  >
-                    <MutationWatcher />
-                    {textarea && <InputWatcher textarea={textarea} />}
-                    {textarea && <SelectionWatcher textarea={textarea} />}
-                    <JSONFormatter />
-                    <MessageSerializer />
-                  </Group>
-                </Group>
-              )}
-            </Transition>
-          </Portal>
-        )}
-        {mounted && parent && <ClickThrougher parent={parent} />}
-        <ConversationMenu />
-        <Notifications position="top-right" />
+                </Tooltip>
+                <ContinueWorker />
+                <ClickThrougher />
+                <TextAreaAugmenter />
+                <ConversationMenu />
+                <MessageSerializer />
+                <CoderModal2 />
+                {/* BUTTONS / UI HERE */}
+              </Group>
+            )}
+          </Transition>
+          <Notifications position="top-right" />
+        </Box>
       </MantineProvider>
     </ColorSchemeProvider>
   );

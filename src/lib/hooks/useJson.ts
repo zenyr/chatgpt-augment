@@ -1,13 +1,7 @@
 import { useLocalStorage } from "@mantine/hooks";
 import { useCallback, useMemo } from "react";
+import { safeParseJson } from "../utils";
 
-const safeParseJson = (str: string) => {
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    return {};
-  }
-};
 export const useJson = (key = "store") => {
   const [str, setStr] = useLocalStorage({
     key,
