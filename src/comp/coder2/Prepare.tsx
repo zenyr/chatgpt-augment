@@ -1,5 +1,5 @@
 import { useCoder } from "@/lib/hooks/useCoder2";
-import { useSelector } from "@/lib/hooks/useTarget";
+import { store } from "@/lib/hooks/workers/useElements";
 import {
   ActionIcon,
   Button,
@@ -11,7 +11,6 @@ import {
 import { IconPlayerPlay, IconX } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { CoderLanguageSelector } from "./Languages";
-import { store } from "@/lib/hooks/workers/useElements";
 
 export const Coder2Prepare = () => {
   const [isChatNew, isChatGpt4] = store((s) => [

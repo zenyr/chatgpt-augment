@@ -4,7 +4,6 @@ import {
   ActionIcon,
   Button,
   Group,
-  Indicator,
   Modal,
   Paper,
   Text,
