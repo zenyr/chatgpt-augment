@@ -37,6 +37,12 @@ const initialElements = {
 export type Els = typeof initialElements;
 export const store = create(
   combine(initialElements, (set, get) => ({
+    computed: {
+      isStreaming: () => {
+        const { button } = get();
+        return !!button.stop;
+      },
+    },
     handlers: {
       setMain: (main: Els["main"]) => set({ main }),
       setEdits: (edits: Els["edits"]) => set({ edits }),
@@ -61,6 +67,14 @@ export const store = create(
         const aContainer = Object.values(container).flat().filter(Boolean);
         return [...aMain, ...aEdits, ...aButton, ...aContainer];
       },
+      submitText: (text: string) => {
+        const { main } = get();
+        if (main.textarea) {
+          main.textarea.value = text;
+          main.textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        if (main.submit) main.submit.click();
+      },
     },
   }))
 );
@@ -76,10 +90,16 @@ const SELECTORS = {
   button_new: ["nav a.flex-grow, .sticky h1 + button"] as const,
   button_regen: [
     "form .h-full.justify-center button.-z-0",
-    /Regenerate/,
+    /Regenerate|points="1 4 1 10 7 10"/,
   ] as const,
-  button_continue: ["form .h-full.justify-center button", /Continue/] as const,
-  button_stop: ["form .h-full.justify-center button", /Stop/] as const,
+  button_continue: [
+    "form .h-full.justify-center button",
+    /Continue|points="11 19 2 12 11 5 11 19"/,
+  ] as const,
+  button_stop: [
+    "form .h-full.justify-center button",
+    /Stop|rect x="3" y="3"/,
+  ] as const,
   button_active: ["main .justify-center button div.bg-white"] as const,
   button_gpt3: ["main .justify-center button div", /GPT-3/] as const,
   button_gpt4: ["main .justify-center button div", /GPT-4/] as const,
@@ -123,7 +143,7 @@ export const useElsUpdater = () => {
             reg?: RegExp
           ) =>
             [...document.querySelectorAll<T>(selector)].find((el) =>
-              reg ? el.textContent?.match(reg) : true
+              reg ? el.innerHTML.match(reg) : true
             ) || null;
           const buttonNew = scanButton<HTMLButtonElement>(
             ...SELECTORS.button_new

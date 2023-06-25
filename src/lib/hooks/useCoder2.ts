@@ -107,7 +107,7 @@ type State = typeof initialState & {
     parseMessage: (text: string) => void;
     submitResponse: () => Promise<string | Error>;
     submitInitialPrompt: () => Promise<string | Error>;
-    onFinish: () => void;
+    onFinishReview: () => void;
     parseFiles: (text: string) => void;
     sendPrompt: (prompt: string) => Promise<string | Error>;
     receiveStream: () => Promise<void>;
@@ -354,7 +354,7 @@ export const useCoder = create<State>()((set, get) => {
           // there are still unreviewed files. try again.
           setTimeout(() => handlers.sendPrompt(computed.promptReview), 10);
         } else {
-          return handlers.onFinish();
+          return handlers.onFinishReview();
         }
       }
     },
@@ -445,7 +445,7 @@ export const useCoder = create<State>()((set, get) => {
       return currentMessage;
     },
 
-    onFinish: () => {
+    onFinishReview: () => {
       set({ step: 3 });
     },
   };

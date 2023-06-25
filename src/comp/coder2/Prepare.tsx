@@ -14,8 +14,8 @@ import { CoderLanguageSelector } from "./Languages";
 
 export const Coder2Prepare = () => {
   const [isChatNew, isChatGpt4] = store((s) => [
-    !s.container.conversations?.length,
-    s.button.gptActive === s.button.gpt4,
+    !s.container.conversations?.length && !!s.button.gptActive,
+    !!(s.button.gptActive && s.button.gptActive === s.button.gpt4),
   ]);
   const [handlers, prepareValues, prepared, questionCount, appName, language] =
     useCoder((s) => [
