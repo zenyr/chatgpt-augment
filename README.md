@@ -27,6 +27,7 @@ Yes, you guessed it. This Readme is also written by ChatGPT.
 
 | Image                                  | Description                                                                                           |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ![1.8.0](img/details.png)              | - The main interface: sits below your input box, within an inch                                       |
 | ![Text expander](img/expander.gif)     | - Select a shorthand and press `Ctrl/Cmd+E`. <br/> - use `:cursor:` to designate the cursor position. |
 | ![Add a macro modal](img/addmodal.png) | Add/Overwrite/Delete macros here.                                                                     |
 | ![Menu](img/menu.png)                  | Right click on conversations.                                                                         |
