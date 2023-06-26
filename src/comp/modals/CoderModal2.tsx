@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { Coder2Files } from "../coder2/Files";
 import { Coder2Main } from "../coder2/Main";
 import { Coder2Prepare } from "../coder2/Prepare";
+import { Coder2Exporter } from "../coder2/Exporter";
 
 export const CoderModal2 = () => {
   const [askClose, askCloseHandler] = useToggle();
@@ -106,6 +107,7 @@ export const CoderModal2 = () => {
               <Paper p="xs" style={{ flex: 3 }}>
                 {step === 1 && <Coder2Prepare />}
                 {step === 2 && <Coder2Main />}
+                {step === 3 && <Coder2Exporter />}
               </Paper>
             </Group>
           </Modal>

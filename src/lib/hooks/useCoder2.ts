@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { waitElement } from "../elementPromises";
 import { serializeMessageElement } from "../messageSerializer";
 import json5 from "json5";
+import zip from "jszip";
 import { store } from "./workers/useElements";
 export type MemFile = {
   path: string;
@@ -112,6 +113,8 @@ type State = typeof initialState & {
     sendPrompt: (prompt: string) => Promise<string | Error>;
     receiveStream: () => Promise<void>;
     finalizeStream: () => string;
+    handleExportJsonClick: (asJson5?: boolean) => Promise<void>;
+    handleExportZipClick: () => Promise<void>;
     reset: () => void;
   };
 };
@@ -447,6 +450,32 @@ export const useCoder = create<State>()((set, get) => {
 
     onFinishReview: () => {
       set({ step: 3 });
+    },
+
+    handleExportJsonClick: async (asJson5 = true) => {
+      const { files } = get();
+      // save as json blob for browser
+      const blob = new File(
+        [(asJson5 ? json5.stringify : JSON.stringify)(files, null, 2)],
+        "files.json",
+        { type: "application/json" }
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `files.json${asJson5 ? "5" : ""}`;
+      a.click();
+    },
+    handleExportZipClick: async () => {
+      const z = new zip();
+      const { files, appName } = get();
+      files.forEach((f) => z.file(f.path, f.content));
+      const zipBlob = await z.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${appName.replace(/\W+/g, " ").trim()}.zip`;
+      a.click();
     },
   };
 
