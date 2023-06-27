@@ -21,10 +21,8 @@ import { useCgptColorScheme } from "./lib/hooks/useColorScheme";
 import { useRootAnchor } from "./lib/hooks/useTarget";
 import { useElsUpdater } from "./lib/hooks/workers/useElements";
 
-const cache = createEmotionCache({
-  key: "cgpt-agmt",
-  insertionPoint: document.body,
-});
+const container = document.getElementsByTagName("head")[0];
+let cache = createEmotionCache({ key: "cgpt-agmt", container });
 
 export const App = () => {
   const [colorScheme, setTheme] = useCgptColorScheme();
@@ -58,7 +56,7 @@ export const App = () => {
           setTheme(theme || ("system" as unknown as "light"))
         }
       >
-        <MantineProvider emotionCache={cache} theme={{ colorScheme }}>
+        <MantineProvider emotionCache={cache!} theme={{ colorScheme }}>
           <Group style={wrapperStyle} align="center" position="center">
             <Transition
               mounted={!!width && mounted}
