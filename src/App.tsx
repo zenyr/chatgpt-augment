@@ -1,4 +1,6 @@
+import { ClassNames } from "@emotion/react";
 import {
+  Badge,
   ColorSchemeProvider,
   Group,
   MantineProvider,
@@ -75,24 +77,43 @@ export const App = () => {
                   className="cgpt-agmt"
                   noWrap
                 >
-                  <Tooltip
-                    label={
-                      <Text
-                        component={Balancer}
-                        size="xs"
-                        dangerouslySetInnerHTML={{ __html }}
-                      />
-                    }
-                    styles={{
-                      tooltip: { maxWidth: "90vw", whiteSpace: "pre-wrap" },
-                    }}
-                    withArrow
-                    withinPortal
-                  >
-                    <Text variant="gradient" size="sm">
-                      {isWide && `ChatGPT Augment `}v{version}
-                    </Text>
-                  </Tooltip>
+                  <ClassNames>
+                    {({ css }) => (
+                      <Tooltip
+                        label={
+                          <Text
+                            component={Balancer}
+                            size="xs"
+                            dangerouslySetInnerHTML={{ __html }}
+                          />
+                        }
+                        classNames={{
+                          tooltip: css`
+                            max-width: "90vw";
+                            white-space: "pre-wrap";
+                          `,
+                        }}
+                        withArrow
+                        withinPortal
+                      >
+                        <Badge
+                          variant="gradient"
+                          size="xs"
+                          fw={500}
+                          className={css`
+                            opacity: 0.5;
+                            text-transform: initial;
+                            transition: opacity 1s;
+                            &:hover {
+                              opacity: 1;
+                            }
+                          `}
+                        >
+                          {isWide && `ChatGPT Augment `}v{version}
+                        </Badge>
+                      </Tooltip>
+                    )}
+                  </ClassNames>
                   <ContinueWorker />
                   <ClickThrougher />
                   <TextAreaAugmenter />

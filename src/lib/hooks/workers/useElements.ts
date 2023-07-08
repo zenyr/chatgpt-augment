@@ -31,6 +31,7 @@ const initialElements = {
     conversations: null as HTMLDivElement[] | null,
     lastConversation: null as HTMLDivElement | null,
     continue: null as HTMLDivElement | null,
+    model: null as HTMLDivElement | null,
   },
 };
 
@@ -82,7 +83,7 @@ export const store = create(
 const SELECTORS = {
   main_form: "main form",
   main_textarea: "main form textarea",
-  main_submit: "main form textarea + button",
+  main_submit: "main form textarea ~ button",
   main_target: "main form + div",
   edit_textarea: "main .group textarea",
   edit_submit: "main .group textarea + div button.btn-primary",
@@ -103,9 +104,10 @@ const SELECTORS = {
   button_active: ["main .justify-center button div.bg-white"] as const,
   button_gpt3: ["main .justify-center button div", /GPT-3/] as const,
   button_gpt4: ["main .justify-center button div", /GPT-4/] as const,
-  container_continue: "form .justify-center",
+  container_continue: "form .h-full.justify-center",
   container_list: "nav li.relative",
   container_conversations: "main .group",
+  container_model: "main header",
 };
 
 // monitor document and update elsStore
@@ -204,6 +206,9 @@ export const useElsUpdater = () => {
             document.querySelectorAll<HTMLDivElement>(
               SELECTORS.container_conversations
             );
+          const containerModel = document.querySelector<HTMLDivElement>(
+            SELECTORS.container_model
+          );
           const containerLastConversation =
             containerConversations[containerConversations.length - 1];
           const containerContinue = document.querySelector<HTMLDivElement>(
@@ -214,6 +219,7 @@ export const useElsUpdater = () => {
             conversations: [...containerConversations],
             lastConversation: containerLastConversation,
             continue: containerContinue,
+            model: containerModel,
           };
           const listMatch = shallowEqual(container.list, els.container.list);
           const conversationsMatch = shallowEqual(

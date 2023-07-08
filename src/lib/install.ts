@@ -12,7 +12,7 @@ anchor.style.position = "absolute";
 // anchor.style.transform = "translate(0, -100%)";
 anchor.style.right = "10px";
 anchor.style.bottom = "0";
-anchor.style.backdropFilter = "blur(3px)";
+anchor.style.backdropFilter = "blur(5px)";
 
 document.body.appendChild(anchor);
 

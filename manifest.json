@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Augment",
-  "version": "1.8.2",
-  "description": "Enhance chat with ChatGPT-Augment: auto-continue, macros, token count, prompts, gradients, JSON format.",
+  "version": "1.8.3",
+  "description": "Enhance chat with ChatGPT-Augment: auto-continue, macros, token count, prompts, JSON format.",
   "content_scripts": [
     {
       "matches": [
