@@ -9,6 +9,7 @@ anchor.id = "cgpt-agmt-root";
 anchor.style.position = "absolute";
 anchor.style.left = "0";
 anchor.style.top = "0";
+anchor.style.height = "0";
 
 document.body.appendChild(anchor);
 

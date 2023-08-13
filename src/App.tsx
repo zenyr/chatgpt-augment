@@ -30,8 +30,8 @@ export const App = () => {
   const [colorScheme, setTheme] = useCgptColorScheme();
 
   const [mounted, setMounted] = useState(false);
-  const { width: w, height: h } = useElsUpdater();
-  const [tgt, __html, rect] = useRootAnchor(w * h);
+  useElsUpdater();
+  const [tgt, __html, rect] = useRootAnchor();
   const { width, height, x, y } = rect || { width: 0, height: 0, x: 0, y: 0 };
   const isWide = width > 600;
   const wrapperStyle = useMemo(

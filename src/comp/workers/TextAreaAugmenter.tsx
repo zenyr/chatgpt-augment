@@ -15,8 +15,8 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { memo } from "react";
-import { TokenReaderModal } from "../modals/TokenReaderModal";
 import { MacroAddModal } from "../modals/MacroAddModal";
+import { TokenReaderModal } from "../modals/TokenReaderModal";
 
 const Worker = ({
   textarea,
