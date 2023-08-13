@@ -1,13 +1,18 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { waitElement } from "../elementPromises";
 import { useDead } from "./useDeadRef";
+import { useViewportSize } from "@mantine/hooks";
 
-export const useQuerySelector = (selector: string): HTMLElement | null => {
+export const useQuerySelector = (
+  selector: string,
+  onMutation?: (el: HTMLElement | null) => void
+): HTMLElement | null => {
   const [element, setElement] = useState<HTMLElement | null>(null);
   const elRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleElement = (): void => {
       const selectedElement = document.querySelector<HTMLElement>(selector);
+      onMutation?.(selectedElement);
       if (selectedElement === elRef.current) return;
       setElement(selectedElement);
       elRef.current = selectedElement;
@@ -24,7 +29,7 @@ export const useQuerySelector = (selector: string): HTMLElement | null => {
     observer.observe(document.documentElement, options);
 
     return () => observer.disconnect();
-  }, [selector]);
+  }, [selector, onMutation]);
 
   return element;
 };
@@ -138,17 +143,25 @@ export const useSelectors = <E extends HTMLElement>(
 };
 
 export const useRootAnchor = () => {
-  const anchor = useQuerySelector(`form + div`);
   const [orgHtml, setOrgHtml] = useState("");
-  const [width, setWidth] = useState(200);
-  useEffect(() => {
-    if (!anchor) return;
-    const span = anchor.firstChild as HTMLSpanElement;
-    setOrgHtml(span.innerHTML || "ChatGPT");
-    setWidth(anchor.clientWidth);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const { width: w, height: h } = useViewportSize();
+  const [n, setN] = useState(0);
+  useLayoutEffect(() => {
+    setN(w * h);
+  }, [w, h]);
+  const handleAnchorMutation = useCallback(
+    (el: HTMLElement | null = anchor) => {
+      if (!el) return;
+      const span = el.firstChild as HTMLSpanElement;
+      const rect = span.getBoundingClientRect();
+      setRect(rect);
+      setOrgHtml(span.innerHTML || "ChatGPT");
+    },
+    [n]
+  );
 
-    // anchor.innerHTML = "&nbsp;";
-  }, [anchor]);
+  const anchor = useQuerySelector(`form + div`, handleAnchorMutation);
 
-  return [anchor, orgHtml, width] as const;
+  return [anchor, orgHtml, rect] as const;
 };

@@ -25,14 +25,14 @@ import { useElsUpdater } from "./lib/hooks/workers/useElements";
 
 const container = document.getElementsByTagName("head")[0];
 let cache = createEmotionCache({ key: "cgpt-agmt", container });
-
+const m = 5;
 export const App = () => {
   const [colorScheme, setTheme] = useCgptColorScheme();
 
   const [mounted, setMounted] = useState(false);
-  const [tgt, __html] = useRootAnchor();
-
-  const { width, height } = useElsUpdater(); // updates els on mutation
+  const { width: w, height: h } = useElsUpdater();
+  const [tgt, __html, rect] = useRootAnchor(w * h);
+  const { width, height, x, y } = rect || { width: 0, height: 0, x: 0, y: 0 };
   const isWide = width > 600;
   const wrapperStyle = useMemo(
     () =>
@@ -51,7 +51,16 @@ export const App = () => {
     setTimeout(() => setMounted(true), 100);
   }, [tgt]);
   return (
-    <div style={{ width, height, position: "relative" }}>
+    <div
+      style={{
+        width: width + m * 2,
+        height: height + m * 2,
+        left: x - m,
+        top: y - m,
+        position: "relative",
+        backdropFilter: "blur(5px)",
+      }}
+    >
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={(theme) =>
