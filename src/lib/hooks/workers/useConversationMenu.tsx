@@ -90,8 +90,8 @@ export const useConversationMenu = () => {
             edit: async () => {
               helper.prepareAndClick();
               try {
-                const els = await helper.get("button", 3);
-                if (els?.length !== 3) return handlers.bail?.();
+                const els = await helper.get("button", 2);
+                if (els?.length !== 2) return handlers.bail?.();
                 const edit = els[0];
                 edit.click();
               } finally {
@@ -101,13 +101,17 @@ export const useConversationMenu = () => {
             share: async () => {
               helper.prepareAndClick();
               try {
-                const els = await helper.get("button", 3);
-                if (els?.length !== 3) return handlers.bail?.();
-
-                const share = els[1];
-                const hasPopup = share.getAttribute("aria-haspopup");
-                if (!hasPopup) return;
-                share.click();
+                const els = await helper.get("button", 2);
+                if (els?.length !== 2) return handlers.bail?.();
+                const t = Date.now() + 2000;
+                let btnShare: HTMLElement | null;
+                do {
+                  await new Promise((r) => setTimeout(r, 10));
+                  btnShare = document.querySelector(
+                    `[aria-label="Share chat"]`
+                  );
+                  btnShare?.click();
+                } while (!btnShare && t > Date.now());
               } finally {
                 helper.cleanup();
               }
@@ -115,8 +119,8 @@ export const useConversationMenu = () => {
             copyUrl: async () => {
               helper.prepareAndClick();
               try {
-                const els = await helper.get("button", 3);
-                if (els?.length !== 3) return handlers.bail?.();
+                const els = await helper.get("button", 2);
+                if (els?.length !== 2) return handlers.bail?.();
 
                 const url = location.href;
                 navigator.clipboard.writeText(url);
@@ -135,8 +139,8 @@ export const useConversationMenu = () => {
               try {
                 const title = target.textContent;
 
-                const els = await helper.get("button", 3);
-                if (els?.length !== 3) return handlers.bail?.();
+                const els = await helper.get("button", 2);
+                if (els?.length !== 2) return handlers.bail?.();
 
                 const edit = els[0];
                 edit.click();
@@ -177,18 +181,21 @@ export const useConversationMenu = () => {
               try {
                 const title = target.textContent;
 
-                const els = await helper.get("button", 3);
-                if (els?.length !== 3) return handlers.bail?.();
+                const els = await helper.get("button", 2);
+                if (els?.length !== 2) return handlers.bail?.();
 
                 const del = els[els.length - 1];
                 del.click();
-
-                const elsBtn = await helper.get("button", 2);
-                if (elsBtn?.length !== 2) return handlers.bail?.();
-
-                const confirm = elsBtn[0];
-                confirm.click();
-
+                const t = Date.now() + 2000;
+                let delConfirm: Element | null;
+                do {
+                  await new Promise((r) => setTimeout(r, 10));
+                  delConfirm = document.querySelector(
+                    "button.btn.relative.btn-danger"
+                  );
+                } while (!delConfirm && t > Date.now());
+                if (!delConfirm) return handlers.bail?.();
+                (delConfirm as HTMLButtonElement).click();
                 notifications.show({
                   icon: <IconTrash />,
                   color: "red",
