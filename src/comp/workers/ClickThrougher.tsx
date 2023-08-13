@@ -26,7 +26,8 @@ export const ClickThrougher = () => {
                 pointer-events: none;
                 button,
                 textarea,
-                .rounded-xl {
+                .rounded-xl,
+                [role="menu"] {
                   pointer-events: auto;
                 }
               }
